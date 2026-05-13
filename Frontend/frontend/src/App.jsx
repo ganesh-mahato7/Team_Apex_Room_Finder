@@ -1,53 +1,14 @@
-import { useState } from "react";
-import Home from "./pages/Home";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/home";
 
 function App() {
-
-  const [properties, setProperties] = useState([]);
-
-  const [showForm, setShowForm] = useState(false);
-
-  const [formData, setFormData] = useState({
-    title: "",
-    location: "",
-    type: "Apartment",
-    image: "",
-  });
-
-  const handleAddProperty = () => {
-
-    if (!formData.title || !formData.location) {
-      alert("Please Fill All Fields");
-      return;
-    }
-
-    const newProperty = {
-      ...formData,
-      id: Date.now(),
-    };
-
-    setProperties([...properties, newProperty]);
-
-    setFormData({
-      title: "",
-      location: "",
-      type: "Apartment",
-      image: "",
-    });
-
-    setShowForm(false);
-
-  };
-
   return (
-    <Home
-      properties={properties}
-      showForm={showForm}
-      setShowForm={setShowForm}
-      formData={formData}
-      setFormData={setFormData}
-      handleAddProperty={handleAddProperty}
-    />
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </Router>
   );
 }
 
