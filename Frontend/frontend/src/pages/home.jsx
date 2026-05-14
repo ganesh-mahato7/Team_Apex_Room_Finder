@@ -1,10 +1,19 @@
 import React from "react";
 import "./home.css";
-import { addProperty } from "../script/home";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+
+  const navigate = useNavigate();
+
+  const addProperty = () => {
+    navigate("/add-property");
+  };
+
   return (
     <div className="home-container">
+      
+      {/* Navbar */}
       <header className="navbar">
         <div className="logo">
           <div className="diamond"></div>
@@ -24,6 +33,19 @@ function Home() {
           <a href="#" className="signin">Sign In</a>
         </div>
       </header>
+
+      {/* Search Section */}
+      <div className="search-section">
+        <div className="search-box">
+          <p className="search-title">What are You Looking for ?</p>
+          <input
+            type="text"
+            placeholder="Search for Places, Property Types....."
+            className="search-input"
+          />
+        </div>
+      </div>
+
     </div>
   );
 }
