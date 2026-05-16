@@ -1,0 +1,233 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background: #f5f5f5;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+/* LEFT SIDE */
+.left {
+    width: 50%;
+    background: #fff;
+    padding: 60px;
+    overflow-y: auto;
+}
+
+.left h1 {
+    margin-bottom: 10px;
+}
+
+.left p {
+    margin-bottom: 20px;
+}
+
+.left span {
+    color: green;
+    cursor: pointer;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.password-box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.password-box input {
+    border: none;
+    flex: 1;
+}
+
+.password-box span {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+    font-size: 13px;
+}
+
+button {
+    padding: 14px;
+    border: none;
+    border-radius: 25px;
+    background: #1c5c45;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background: #144534;
+}
+
+/* REGISTER ROLE */
+.role-select {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.role-select button {
+    flex: 1;
+    border-radius: 10px;
+    background: #ddd;
+    color: black;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.role-select .active {
+    background: #1c5c45;
+    color: white;
+}
+
+/* RIGHT SIDE */
+.right {
+    width: 50%;
+    background: linear-gradient(135deg, #0f3d2e, #1c5c45);
+    position: relative;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: gradientShift 10s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background: linear-gradient(135deg, #0f3d2e, #1c5c45); }
+    50% { background: linear-gradient(135deg, #1c5c45, #0f3d2e); }
+    100% { background: linear-gradient(135deg, #0f3d2e, #1c5c45); }
+}
+
+.overlay {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    top: 50px;
+    right: 50px;
+}
+
+.right-content {
+    position: relative;
+    z-index: 2;
+    max-width: 320px;
+    text-align: center;
+}
+
+/* Brand Title */
+.brand-title {
+    font-size: 36px;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #fff;
+    letter-spacing: 2px;
+    animation: fadeInDown 1s ease;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.tagline {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #ddd;
+}
+
+/* Illustration */
+.hero-img {
+    width: 100%;
+    max-width: 320px;
+    margin: 20px 0;
+    border-radius: 10px;
+    animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+/* Quote */
+.quote {
+    margin-top: 20px;
+    font-style: italic;
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    animation: fadeIn 2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* CTA Button */
+.cta {
+    margin-top: 20px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    background: #fff;
+    color: #1c5c45;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.cta:hover {
+    transform: scale(1.05);
+    background: #f0f0f0;
+}
+
+/* Hidden containers */
+.hidden {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    .left, .right {
+        width: 100%;
+        height: auto;
+    }
+}
