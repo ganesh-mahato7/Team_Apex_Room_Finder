@@ -1,8 +1,11 @@
+// pages/Home.jsx
+
 import React from "react";
-import "../css/home.css";
+import "../css/global.css";
+import "../css/Home.css";
 import house from "../assets/house.jpg";
 
-import { FiSearch, FiMapPin, FiHome, FiPlus, FiLogIn } from "react-icons/fi";
+import { FiSearch, FiMapPin, FiHome, FiPlus, FiLogIn, FiLogOut } from "react-icons/fi";
 import { MdApartment, MdOtherHouses } from "react-icons/md";
 import { BiBuildingHouse } from "react-icons/bi";
 import { HiOutlineArrowRight } from "react-icons/hi";
@@ -13,7 +16,7 @@ import {
   stats,
   tags,
   popularCities,
-} from "../scripts/home";       
+} from "../scripts/Home";
 
 const exploreIcons = [
   <BiBuildingHouse size={24} />,
@@ -38,7 +41,11 @@ function Home() {
     handleCityClick,
     handleSearch,
     handleSearchKeyDown,
+    handleLogout,
   } = useHomeLogic();
+
+  // Debug — remove after fixing
+  console.log("Current role:", role);
 
   return (
     <div className="home-container">
@@ -57,14 +64,28 @@ function Home() {
         </nav>
 
         <div className="nav-actions">
+
           <button className="add-btn" onClick={goToAddProperty}>
             <FiPlus size={15} /> Add Property
           </button>
-          {!role && (
+
+          {/* NOT logged in → show Sign In */}
+          {role === null && (
             <button className="login-btn" onClick={goToSignIn}>
               <FiLogIn size={15} /> Sign In
             </button>
           )}
+
+          {/* Logged in → show role badge + Logout */}
+          {role !== null && (
+            <>
+              <span className="nav-role-badge">{role}</span>
+              <button className="login-btn" onClick={handleLogout}>
+                <FiLogOut size={15} /> Logout
+              </button>
+            </>
+          )}
+
         </div>
       </header>
 
@@ -138,14 +159,18 @@ function Home() {
             <h2>Explore Properties</h2>
             <p className="explore-sub">Browse by category and find your ideal space</p>
           </div>
-          <button className="view-all-btn" onClick={goToProperties}>
+          <button className="view-all-btn" onClick={() => goToProperties()}>
             View All <HiOutlineArrowRight size={15} style={{ marginLeft: 4, verticalAlign: "middle" }} />
           </button>
         </div>
 
         <div className="explore-grid">
           {exploreItems.map((item, i) => (
-            <div className="explore-card" key={i}>
+            <div
+              className="explore-card"
+              key={i}
+              onClick={() => goToProperties(item.title)}
+            >
               <div
                 className="explore-icon"
                 style={{ background: item.color, color: item.iconColor }}
@@ -154,7 +179,7 @@ function Home() {
               </div>
               <div className="explore-card-info">
                 <h3>{item.title}</h3>
-                <p>{item.count}</p>
+                <p>Browse listings →</p>
               </div>
               <HiOutlineArrowRight
                 size={18}

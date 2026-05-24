@@ -1,4 +1,7 @@
+// pages/AddProperty.jsx
+
 import React from "react";
+import "../css/global.css";
 import "../css/AddProperty.css";
 
 import {
@@ -15,7 +18,7 @@ import {
   useAddPropertyLogic,
   propertyTypes,
   facilityOptions,
-} from "../scripts/AddProperty";    
+} from "../scripts/AddProperty";
 
 const typeIcons = {
   room:      <BiBuildingHouse size={22} />,
@@ -48,7 +51,7 @@ function AddProperty() {
     goRooms,
   } = useAddPropertyLogic();
 
-  //  Success Screen 
+  // ── Success Screen ──
   if (submitted) {
     return (
       <div className="success-screen">

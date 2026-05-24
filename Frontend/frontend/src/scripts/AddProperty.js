@@ -1,8 +1,10 @@
+// scripts/AddProperty.js
+// All JavaScript logic for AddProperty.jsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-//  Static Data 
-
+// ── Static Data ──
 export const propertyTypes = [
   { value: "room",      label: "Room"      },
   { value: "apartment", label: "Apartment" },
@@ -27,53 +29,30 @@ export const initialFormState = {
   email:       "",
 };
 
-//  Validation 
-
+// ── Validation ──
 export function validateForm(form, images) {
   const errors = {};
-
-  if (!form.type)
-    errors.type = "Please select a property type.";
-
-  if (!form.location.trim())
-    errors.location = "Location is required.";
-
-  if (!form.title.trim())
-    errors.title = "Title is required.";
-
-  if (!form.description.trim())
-    errors.description = "Description is required.";
-
-  if (!form.mobile.trim())
-    errors.mobile = "Mobile number is required.";
-  else if (!/^\d{10}$/.test(form.mobile))
-    errors.mobile = "Enter a valid 10-digit number.";
-
-  if (!form.rent.trim())
-    errors.rent = "Rent amount is required.";
-
-  if (!form.email.trim())
-    errors.email = "Email is required.";
-  else if (!/\S+@\S+\.\S+/.test(form.email))
-    errors.email = "Enter a valid email address.";
-
-  if (images.length === 0)
-    errors.images = "Please upload at least one image.";
-
+  if (!form.type)               errors.type        = "Please select a property type.";
+  if (!form.location.trim())    errors.location    = "Location is required.";
+  if (!form.title.trim())       errors.title       = "Title is required.";
+  if (!form.description.trim()) errors.description = "Description is required.";
+  if (!form.mobile.trim())      errors.mobile      = "Mobile number is required.";
+  else if (!/^\d{10}$/.test(form.mobile)) errors.mobile = "Enter a valid 10-digit number.";
+  if (!form.rent.trim())        errors.rent        = "Rent amount is required.";
+  if (!form.email.trim())       errors.email       = "Email is required.";
+  else if (!/\S+@\S+\.\S+/.test(form.email)) errors.email = "Enter a valid email address.";
+  if (images.length === 0)      errors.images      = "Please upload at least one image.";
   return errors;
 }
 
-//  Image Processing 
-
+// ── Image Processing ──
 export function processImageFiles(e, currentCount) {
   const files = Array.from(e.target.files);
   if (!files.length) return null;
-
   if (currentCount + files.length > 5) {
     alert("Maximum 5 images allowed.");
     return null;
   }
-
   return files.map((file) => ({
     file,
     url:  URL.createObjectURL(file),
@@ -81,8 +60,7 @@ export function processImageFiles(e, currentCount) {
   }));
 }
 
-//  Custom Hook 
-
+// ── Custom Hook ──
 export function useAddPropertyLogic() {
   const navigate = useNavigate();
 
@@ -125,7 +103,7 @@ export function useAddPropertyLogic() {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-
+    // TODO: send to backend API
     setSubmitted(true);
   };
 
