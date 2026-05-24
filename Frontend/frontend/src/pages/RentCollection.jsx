@@ -151,7 +151,7 @@ export default function RentCollection() {
               badge="8"
               badgeClass="success"
               active={activeNav === "Confirmed Bookings"}
-              onClick={() => setActiveNav("Confirmed Bookings")}
+              onClick={() => { setActiveNav("Confirmed Bookings"); navigate("/Confirmed-bookings"); }}
             />
             <NavItem
               icon={<FiCalendar size={15} />}

@@ -108,8 +108,7 @@ function NavItem({ icon, label, badge, badgeClass = "", active, onClick }) {
 }
 
 // ── Main Component ────────────────────────────────────────────────────────────
-
-export default function LandlordDashboard() {
+function LandlordDashboard() {
   const navigate = useNavigate();                  
   const [activeNav, setActiveNav]       = useState("Dashboard");
   const [activeFilter, setActiveFilter] = useState("All");
@@ -237,12 +236,7 @@ export default function LandlordDashboard() {
               active={activeNav === "My Profile"}
               onClick={() => setActiveNav("My Profile")}
             />
-            {/* <NavItem
-              icon={<FiShield size={15} />}
-              label="Verification"
-              active={activeNav === "Verification"}
-              onClick={() => setActiveNav("Verification")}
-            /> */}
+          
             <NavItem
               icon={<FiSettings size={15} />}
               label="Settings"
@@ -526,3 +520,4 @@ export default function LandlordDashboard() {
     </div>
   );
 }
+export default LandlordDashboard;
