@@ -1,0 +1,93 @@
+/* Scheduled Visits Specific Styles */
+
+.visits-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.visit-item {
+    background-color: var(--surface);
+    border-radius: 12px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.visit-date-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    padding: 16px;
+    background-color: var(--background);
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+}
+
+.visit-day {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.visit-month {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.visit-content {
+    flex: 1;
+}
+
+.visit-time {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    margin-bottom: 6px;
+}
+
+.visit-guest {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+}
+
+.visit-property {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.visit-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.visit-actions .btn {
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .visit-item {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .visit-actions {
+        width: 100%;
+    }
+    
+    .visit-actions .btn {
+        flex: 1;
+    }
+}
