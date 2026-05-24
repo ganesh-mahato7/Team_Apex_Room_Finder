@@ -1,0 +1,99 @@
+/* css/SignIn.css */
+
+.signin-page {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.signin-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border: 1px solid var(--border);
+}
+
+/* ── LOGO ── */
+.signin-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--blue);
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+/* ── HEADING ── */
+.signin-card h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.signin-card .subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+/* ── FORM ── */
+.signin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── FORGOT PASSWORD ── */
+.forgot-link {
+  text-align: right;
+  font-size: 13px;
+  color: var(--blue);
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: -8px;
+}
+
+.forgot-link:hover { text-decoration: underline; }
+
+/* ── API ERROR ── */
+.api-error {
+  background: #fff5f5;
+  border: 1px solid var(--error);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--error);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ── BOTTOM LINK ── */
+.signin-bottom {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.signin-bottom span {
+  color: var(--blue);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.signin-bottom span:hover { text-decoration: underline; }
