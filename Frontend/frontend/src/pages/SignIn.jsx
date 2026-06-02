@@ -1,6 +1,6 @@
 // pages/SignIn.jsx
 
-import React from "react";
+
 import "../css/global.css";
 import "../css/SignIn.css";
 
