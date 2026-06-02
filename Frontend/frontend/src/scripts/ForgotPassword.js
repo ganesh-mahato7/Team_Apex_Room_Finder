@@ -1,6 +1,8 @@
-// scripts/ForgotPassword.js
+// Frontend/src/scripts/ForgotPassword.js
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { forgotPasswordRequest } from "../services/authService";
 
 export function useForgotPasswordLogic() {
   const navigate = useNavigate();
@@ -18,33 +20,20 @@ export function useForgotPasswordLogic() {
   };
 
   const validate = () => {
-    if (!email.trim())             return "Email is required.";
+    if (!email.trim())               return "Email is required.";
     if (!/\S+@\S+\.\S+/.test(email)) return "Enter a valid email.";
     return "";
   };
 
   const handleSubmit = async () => {
     const err = validate();
-    if (err) {
-      setError(err);
-      return;
-    }
+    if (err) { setError(err); return; }
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/v1/users/forgot-password", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ email }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setApiError(data.message || "Something went wrong.");
-      } else {
-        setSuccess(true);
-      }
+      const data = await forgotPasswordRequest(email);
+      // Always show success — backend never reveals if email exists
+      setSuccess(true);
     } catch (err) {
       setApiError("Cannot connect to server. Please try again.");
     } finally {
@@ -52,18 +41,10 @@ export function useForgotPasswordLogic() {
     }
   };
 
-  const goToSignIn  = () => navigate("/signin");
-  const goToHome    = () => navigate("/");
-
   return {
-    email,
-    error,
-    loading,
-    success,
-    apiError,
-    handleChange,
-    handleSubmit,
-    goToSignIn,
-    goToHome,
+    email, error, loading, success, apiError,
+    handleChange, handleSubmit,
+    goToSignIn: () => navigate("/signin"),
+    goToHome:   () => navigate("/"),
   };
 }

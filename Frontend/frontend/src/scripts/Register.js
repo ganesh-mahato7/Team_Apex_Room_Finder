@@ -1,25 +1,23 @@
-// scripts/Register.js
+// Frontend/src/scripts/Register.js
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { registerUser } from "../services/authService";
 
 export function useRegisterLogic() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name:     "",
-    email:    "",
-    password: "",
-    confirm:  "",
-    role:     "user",
+    name: "", email: "", password: "", confirm: "", role: "user",
   });
 
-  const [errors,  setErrors]  = useState({});
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState("");
+  const [errors,   setErrors]   = useState({});
+  const [loading,  setLoading]  = useState(false);
+  const [success,  setSuccess]  = useState("");
   const [apiError, setApiError] = useState("");
 
   const handleChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm((prev)   => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: "" }));
     setApiError("");
   };
@@ -30,7 +28,7 @@ export function useRegisterLogic() {
     if (!form.email.trim())    e.email    = "Email is required.";
     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Enter a valid email.";
     if (!form.password)        e.password = "Password is required.";
-    else if (form.password.length < 6) e.password = "Password must be at least 6 characters.";
+    else if (form.password.length < 6) e.password = "Min 6 characters.";
     if (!form.confirm)         e.confirm  = "Please confirm your password.";
     else if (form.confirm !== form.password) e.confirm = "Passwords do not match.";
     return e;
@@ -45,23 +43,12 @@ export function useRegisterLogic() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/v1/users/register", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
-          name:     form.name,
-          email:    form.email,
-          password: form.password,
-          role:     form.role,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setApiError(data.message || "Registration failed.");
-      } else {
+      const data = await registerUser(form.name, form.email, form.password, form.role);
+ 
+      if (data.message?.includes("successful") || data.message?.includes("check")) {
         setSuccess(data.message);
+      } else {
+        setApiError(data.message || "Registration failed.");
       }
     } catch (err) {
       setApiError("Cannot connect to server. Please try again.");
@@ -70,18 +57,11 @@ export function useRegisterLogic() {
     }
   };
 
-  const goToSignIn  = () => navigate("/signin");
-  const goToHome    = () => navigate("/");
+  const goToSignIn = () => navigate("/signin");
+  const goToHome   = () => navigate("/");
 
   return {
-    form,
-    errors,
-    loading,
-    success,
-    apiError,
-    handleChange,
-    handleSubmit,
-    goToSignIn,
-    goToHome,
+    form, errors, loading, success, apiError,
+    handleChange, handleSubmit, goToSignIn, goToHome,
   };
 }

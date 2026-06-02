@@ -1,35 +1,39 @@
-// controller/userController.js
+// Backend/controller/userController.js
 
-const bcrypt     = require("bcrypt");
-const jwt        = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
+const bcrypt = require("bcrypt");
+const jwt    = require("jsonwebtoken");
 
 const {
   createUser,
   findUserByEmail,
+  findUserById,
   findUserByResetToken,
   activateUser,
   setResetToken,
   resetPassword,
 } = require("../model/userModel");
 
-// ── Email Transporter ──
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const {
+  sendActivationEmail,
+  sendResetEmail,
+} = require("../utils/sendEmail");
+
+// ── Dummy hash for timing attack prevention ──
+const DUMMY_HASH = "$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ012";
 
 // ── REGISTER ──
 const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // Only allow user or landlord
+    // Block admin self-registration
     if (role === "admin") {
       return res.status(403).json({ message: "Cannot register as admin" });
+    }
+
+    // Validate required fields
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     const existingUser = await findUserByEmail(email);
@@ -37,8 +41,12 @@ const register = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    // Hash password with pepper
     const salt           = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(
+      password + process.env.PEPPER,
+      salt
+    );
 
     const newUser = await createUser(name, email, hashedPassword, role || "user");
 
@@ -49,25 +57,7 @@ const register = async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    // Send activation email
-    await transporter.sendMail({
-      from:    process.env.EMAIL_USER,
-      to:      email,
-      subject: "RoomFinder — Activate your account",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto;">
-          <h2 style="color: #2b7fff;">Welcome to RoomFinder, ${name}!</h2>
-          <p>You registered as a <strong>${role || "user"}</strong>.</p>
-          <p>Click the button below to activate your account:</p>
-          <a href="http://localhost:5000/api/v1/users/activate/${activationToken}"
-            style="background:#2b7fff; color:white; padding:12px 24px;
-                   text-decoration:none; border-radius:8px; display:inline-block; margin-top:10px;">
-            Activate Account
-          </a>
-          <p style="color:#999; margin-top:20px;">This link expires in 24 hours.</p>
-        </div>
-      `,
-    });
+    await sendActivationEmail(name, email, activationToken);
 
     res.status(201).json({
       message: `Registration successful! Please check ${email} to activate your account.`,
@@ -79,7 +69,7 @@ const register = async (req, res) => {
   }
 };
 
-// ── ACTIVATE ACCOUNT ──
+// ── ACTIVATE ──
 const activate = async (req, res) => {
   try {
     const { token } = req.params;
@@ -97,18 +87,30 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
     const user = await findUserByEmail(email);
-    if (!user) {
+
+    // ── Timing attack fix ──
+    // Always run bcrypt.compare even if user doesn't exist
+    // Makes response time consistent regardless of email validity
+    const hashToCheck   = user ? user.password : DUMMY_HASH;
+    const validPassword = await bcrypt.compare(
+      password + process.env.PEPPER,
+      hashToCheck
+    );
+
+    // ── Email enumeration fix ──
+    // Same error message whether email doesn't exist OR password is wrong
+    if (!user || !validPassword) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
+    // Check activation
     if (!user.is_active) {
       return res.status(400).json({ message: "Please activate your account first" });
-    }
-
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) {
-      return res.status(400).json({ message: "Invalid email or password" });
     }
 
     const token = jwt.sign(
@@ -139,12 +141,18 @@ const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await findUserByEmail(email);
-    if (!user) {
-      return res.status(400).json({ message: "No account found with this email" });
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
     }
 
-    // Generate reset token (expires in 1 hour)
+    const user = await findUserByEmail(email);
+
+    // ── Email enumeration fix ──
+    // Always return same message whether email exists or not
+    if (!user) {
+      return res.json({ message: "Password reset link sent to your email!" });
+    }
+
     const resetToken = jwt.sign(
       { email: user.email },
       process.env.JWT_SECRET,
@@ -152,29 +160,8 @@ const forgotPassword = async (req, res) => {
     );
 
     const expires = new Date(Date.now() + 60 * 60 * 1000);
-
     await setResetToken(email, resetToken, expires);
-
-    // Send reset email
-    await transporter.sendMail({
-      from:    process.env.EMAIL_USER,
-      to:      email,
-      subject: "RoomFinder — Reset your password",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto;">
-          <h2 style="color: #2b7fff;">Reset Your Password</h2>
-          <p>We received a request to reset your RoomFinder password.</p>
-          <p>Click the button below to reset it:</p>
-          <a href="http://localhost:5173/reset-password/${resetToken}"
-            style="background:#2b7fff; color:white; padding:12px 24px;
-                   text-decoration:none; border-radius:8px; display:inline-block; margin-top:10px;">
-            Reset Password
-          </a>
-          <p style="color:#999; margin-top:20px;">This link expires in 1 hour.</p>
-          <p style="color:#999;">If you did not request this, you can safely ignore this email.</p>
-        </div>
-      `,
-    });
+    await sendResetEmail(email, resetToken);
 
     res.json({ message: "Password reset link sent to your email!" });
 
@@ -190,23 +177,27 @@ const resetPasswordController = async (req, res) => {
     const { token }       = req.params;
     const { newPassword } = req.body;
 
-    // Verify token
+    if (!newPassword) {
+      return res.status(400).json({ message: "New password is required" });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Check token in database
     const user = await findUserByResetToken(token);
     if (!user) {
       return res.status(400).json({ message: "Invalid or expired reset link." });
     }
 
-    // Check expiry
     if (new Date() > new Date(user.reset_token_expires)) {
       return res.status(400).json({ message: "Reset link has expired." });
     }
 
-    // Hash new password
+    // Hash new password with pepper
     const salt           = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    const hashedPassword = await bcrypt.hash(
+      newPassword + process.env.PEPPER,
+      salt
+    );
 
     await resetPassword(decoded.email, hashedPassword);
 
@@ -218,10 +209,31 @@ const resetPasswordController = async (req, res) => {
   }
 };
 
+// ── GET PROFILE (protected) ──
+const getProfile = async (req, res) => {
+  try {
+    const user = await findUserById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({
+      id:         user.id,
+      name:       user.name,
+      email:      user.email,
+      role:       user.role,
+      created_at: user.created_at,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   register,
   activate,
   login,
   forgotPassword,
   resetPasswordController,
+  getProfile,
 };

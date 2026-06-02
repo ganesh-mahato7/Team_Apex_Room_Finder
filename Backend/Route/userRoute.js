@@ -1,4 +1,4 @@
-// Route/userRoute.js
+// Backend/Route/userRoute.js
 
 const express = require("express");
 const router  = express.Router();
@@ -9,21 +9,26 @@ const {
   login,
   forgotPassword,
   resetPasswordController,
+  getProfile,
 } = require("../controller/userController");
 
-// Register (user or landlord)
-router.post("/register", register);
+const { protect }      = require("../middleware/authMiddleware");
+const { requireRole }  = require("../middleware/roleMiddleware");
 
-// Activate account via email link
-router.get("/activate/:token", activate);
-
-// Login
-router.post("/login", login);
-
-// Forgot password — sends reset email
-router.post("/forgot-password", forgotPassword);
-
-// Reset password — updates password in DB
+// ── Public routes ──
+router.post("/register",              register);
+router.get("/activate/:token",        activate);
+router.post("/login",                 login);
+router.post("/forgot-password",       forgotPassword);
 router.post("/reset-password/:token", resetPasswordController);
+
+// ── Protected routes (any logged in user) ──
+router.get("/profile", protect, getProfile);
+
+// ── Admin only routes ──
+router.get("/all-users", protect, requireRole("admin"), async (req, res) => {
+  // TODO: get all users for admin dashboard
+  res.json({ message: "Admin route — all users" });
+});
 
 module.exports = router;

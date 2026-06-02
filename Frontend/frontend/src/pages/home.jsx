@@ -1,8 +1,8 @@
-// pages/Home.jsx
+// Frontend/src/pages/Home.jsx
 
 import React from "react";
 import "../css/global.css";
-import "../css/Home.css";
+import "../css/home.css";
 import house from "../assets/house.jpg";
 
 import { FiSearch, FiMapPin, FiHome, FiPlus, FiLogIn, FiLogOut } from "react-icons/fi";
@@ -16,7 +16,7 @@ import {
   stats,
   tags,
   popularCities,
-} from "../scripts/Home";
+} from "../scripts/home";
 
 const exploreIcons = [
   <BiBuildingHouse size={24} />,
@@ -27,7 +27,8 @@ const exploreIcons = [
 
 function Home() {
   const {
-    role,
+    user,
+    isLoggedIn,
     activeTag,
     setActiveTag,
     searchQuery,
@@ -43,9 +44,6 @@ function Home() {
     handleSearchKeyDown,
     handleLogout,
   } = useHomeLogic();
-
-  // Debug — remove after fixing
-  console.log("Current role:", role);
 
   return (
     <div className="home-container">
@@ -64,28 +62,26 @@ function Home() {
         </nav>
 
         <div className="nav-actions">
-
           <button className="add-btn" onClick={goToAddProperty}>
             <FiPlus size={15} /> Add Property
           </button>
 
-          {/* NOT logged in → show Sign In */}
-          {role === null && (
+          {/* Not logged in */}
+          {!isLoggedIn && (
             <button className="login-btn" onClick={goToSignIn}>
               <FiLogIn size={15} /> Sign In
             </button>
           )}
 
-          {/* Logged in → show role badge + Logout */}
-          {role !== null && (
+          {/* Logged in */}
+          {isLoggedIn && (
             <>
-              <span className="nav-role-badge">{role}</span>
+              <span className="nav-role-badge">{user?.role}</span>
               <button className="login-btn" onClick={handleLogout}>
                 <FiLogOut size={15} /> Logout
               </button>
             </>
           )}
-
         </div>
       </header>
 
@@ -94,11 +90,9 @@ function Home() {
         <div className="hero-overlay">
 
           <p className="hero-label">🇳🇵 Nepal's #1 Rental Platform</p>
-
           <h1>Find Your Perfect <span className="hero-highlight">Room</span></h1>
           <p className="hero-sub">Discover rooms, flats and apartments near you</p>
 
-          {/* Filter Tags */}
           <div className="hero-tags">
             {tags.map((tag) => (
               <button
@@ -111,7 +105,6 @@ function Home() {
             ))}
           </div>
 
-          {/* Search Bar */}
           <div className="search-bar">
             <FiMapPin className="search-icon" />
             <input
@@ -126,7 +119,6 @@ function Home() {
             </button>
           </div>
 
-          {/* Popular Cities */}
           <p className="popular-label">
             Popular:{" "}
             {popularCities.map((city, i) => (
