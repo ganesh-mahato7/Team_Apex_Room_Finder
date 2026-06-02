@@ -1,10 +1,11 @@
-const dotenv    = require("dotenv");
+const dotenv     = require("dotenv");
 dotenv.config();
 
-const express   = require("express");
-const cors      = require("cors");
-const pool      = require("./database/db");
-const userRoute = require("./Route/userRoute");
+const express    = require("express");
+const cors       = require("cors");
+const pool       = require("./database/db");
+const userRoute  = require("./Route/userRoute");
+const adminRoute = require("./Route/adminRoute");
 
 const app = express();
 
@@ -15,20 +16,17 @@ const PORT = process.env.PORT || 5000;
 
 // Test DB connection
 pool.query("SELECT NOW()", (err, res) => {
-  if (err) {
-    console.log("Database connection failed:", err.message);
-  } else {
-    console.log("Database connected");
-  }
+  if (err) console.log("Database connection failed:", err.message);
+  else     console.log("Database connected");
 });
 
-// Test route
 app.get("/", (req, res) => {
   res.json({ message: "server is running" });
 });
 
-// User routes
+// Routes
 app.use("/api/v1/users", userRoute);
+app.use("/api/v1/admin", adminRoute);
 
 // 404 handler
 app.use((req, res) => {
