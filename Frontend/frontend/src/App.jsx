@@ -1,14 +1,14 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Home from "./pages/home";
-import AddProperty from "./pages/AddProperty";
-import LandlordDashboard from "./pages/LandlordDashboard";
-import RentCollection from "./pages/RentCollection";
-import MyListings from "./pages/MyListings";
-import BookingRequests from "./pages/BookingRequests";
-import Messages from "./pages/Messages";
-import ScheduledVisits from "./pages/ScheduledVisits";
-import ConfirmedBookings from "./pages/ConfirmedBookings";
+import Home from "./pages/LandlordPages/home";
+import AddProperty from "./pages/LandlordPages/AddProperty";
+import LandlordDashboard from "./pages/LandlordPages/LandlordDashboard";
+import RentCollection from "./pages/LandlordPages/RentCollection";
+import MyListings from "./pages/LandlordPages/MyListings";
+import BookingRequests from "./pages/LandlordPages/BookingRequests";
+import Messages from "./pages/LandlordPages/Messages";
+import ScheduledVisits from "./pages/LandlordPages/ScheduledVisits";
+import ConfirmedBookings from "./pages/LandlordPages/ConfirmedBookings";
 
 function App() {
   return (

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../css/Landlordglobal.css";
-import "../css/ScheduledVisit.css";
+import "../../css/LandlordCss/Landlordglobal.css";
+import "../../css/LandlordCss/Message.css";
 
 import {
   FiHome,
@@ -16,27 +16,36 @@ import {
   FiSettings,
   FiLogOut,
   FiMenu,
-  FiSearch,
   FiBell,
   FiMessageSquare,
 } from "react-icons/fi";
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
-const visits = [
+const messages = [
   {
-    day: "18",
-    month: "May",
-    time: "2:30 PM - 3:00 PM",
-    guest: "Anuj Poudel",
+    initials: "AK",
+    sender: "Ajit Kumar",
+    time: "2 hours ago",
+    preview: "Hi, is the 2BHK apartment still available? I'm very interested...",
     property: "2BHK Apartment, Kathmandu",
+    unread: true,
   },
   {
-    day: "20",
-    month: "May",
-    time: "10:00 AM - 10:30 AM",
-    guest: "Sunita Rana",
+    initials: "NK",
+    sender: "Nisha Karki",
+    time: "4 hours ago",
+    preview: "Thank you for accepting my booking request. Can we schedule...",
     property: "3BHK Flat, Bhaktapur",
+    unread: true,
+  },
+  {
+    initials: "RK",
+    sender: "Rajesh Koirala",
+    time: "Yesterday",
+    preview: "I have completed the rent payment for May. Thank you for...",
+    property: "Single Room, Lalitpur",
+    unread: false,
   },
 ];
 
@@ -58,14 +67,11 @@ function NavItem({ icon, label, badge, badgeClass = "", active, onClick }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-function ScheduledVisits() {
+function Messages() {
   const navigate = useNavigate();
-  const [activeNav, setActiveNav] = useState("Scheduled Visits");
+  const [activeNav, setActiveNav] = useState("Messages");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-   const goToMessages = () => {
-    navigate("/Messages");     // Make sure this matches your route
-  };
   return (
     <div className="dashboard-container">
 
@@ -87,7 +93,7 @@ function ScheduledVisits() {
               icon={<FiGrid size={15} />}
               label="Dashboard"
               active={activeNav === "Dashboard"}
-              onClick={() => { setActiveNav("Dashboard"); navigate("/landlord-dashboard"); }}
+              onClick={() => { setActiveNav("Dashboard"); navigate("/"); }}
             />
           </div>
 
@@ -131,7 +137,7 @@ function ScheduledVisits() {
               label="Scheduled Visits"
               badge="3"
               active={activeNav === "Scheduled Visits"}
-              onClick={() => setActiveNav("Scheduled Visits")}
+              onClick={() => { setActiveNav("Scheduled Visits"); navigate("/Scheduled-visits"); }}
             />
           </div>
 
@@ -192,10 +198,6 @@ function ScheduledVisits() {
             <button className="menu-toggle" onClick={() => setSidebarOpen(prev => !prev)}>
               <FiMenu size={24} />
             </button>
-            <div className="search-box">
-              <FiSearch size={20} />
-              <input type="text" placeholder="Search visits..." />
-            </div>
           </div>
 
           <div className="header-right">
@@ -203,7 +205,7 @@ function ScheduledVisits() {
               <FiBell size={20} />
               <span className="notification-dot" />
             </button>
-            <button className="header-btn message-btn" onClick={goToMessages}>
+            <button className="header-btn message-btn">
               <FiMessageSquare size={20} />
               <span className="message-count">7</span>
             </button>
@@ -226,27 +228,24 @@ function ScheduledVisits() {
 
           <div className="page-header">
             <div className="page-title">
-              <h1>Scheduled Visits</h1>
-              <p>Manage property visits and showings</p>
+              <h1>Messages</h1>
+              <p>Communicate with tenants and inquiries</p>
             </div>
           </div>
 
-          <div className="visits-list">
-            {visits.map((visit, i) => (
-              <div className="visit-item" key={i}>
-                <div className="visit-date-box">
-                  <div className="visit-day">{visit.day}</div>
-                  <div className="visit-month">{visit.month}</div>
+          <div className="messages-list">
+            {messages.map((msg, i) => (
+              <div className={`message-item${msg.unread ? " unread" : ""}`} key={i}>
+                <div className="message-avatar">{msg.initials}</div>
+                <div className="message-info">
+                  <div className="message-header">
+                    <h4 className="message-sender">{msg.sender}</h4>
+                    <span className="message-time">{msg.time}</span>
+                  </div>
+                  <p className="message-preview">{msg.preview}</p>
+                  <p className="message-property">{msg.property}</p>
                 </div>
-                <div className="visit-content">
-                  <div className="visit-time">{visit.time}</div>
-                  <h3 className="visit-guest">{visit.guest}</h3>
-                  <p className="visit-property">{visit.property}</p>
-                </div>
-                <div className="visit-actions">
-                  <button className="btn btn-sm btn-success">Confirm</button>
-                  <button className="btn btn-sm btn-outline">Reschedule</button>
-                </div>
+                {msg.unread && <div className="message-unread-dot" />}
               </div>
             ))}
           </div>
@@ -257,4 +256,4 @@ function ScheduledVisits() {
     </div>
   );
 }
-export default ScheduledVisits;
+export default Messages;

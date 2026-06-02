@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../css/Landlordglobal.css";
-import "../css/Message.css";
+import "../../css/LandlordCss/Landlordglobal.css";
+import "../../css/LandlordCss/RentCollection.css";
 
 import {
   FiHome,
@@ -16,36 +16,46 @@ import {
   FiSettings,
   FiLogOut,
   FiMenu,
+  FiSearch,
   FiBell,
   FiMessageSquare,
 } from "react-icons/fi";
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
-const messages = [
-  {
-    initials: "AK",
-    sender: "Ajit Kumar",
-    time: "2 hours ago",
-    preview: "Hi, is the 2BHK apartment still available? I'm very interested...",
-    property: "2BHK Apartment, Kathmandu",
-    unread: true,
-  },
-  {
-    initials: "NK",
-    sender: "Nisha Karki",
-    time: "4 hours ago",
-    preview: "Thank you for accepting my booking request. Can we schedule...",
-    property: "3BHK Flat, Bhaktapur",
-    unread: true,
-  },
+const tenants = [
   {
     initials: "RK",
-    sender: "Rajesh Koirala",
-    time: "Yesterday",
-    preview: "I have completed the rent payment for May. Thank you for...",
+    name: "Rajesh Koirala",
     property: "Single Room, Lalitpur",
-    unread: false,
+    monthlyRent: "Rs. 8,000",
+    dueDate: "May 5, 2026",
+    status: "Paid",
+    amount: "Rs. 8,000",
+    rowClass: "completed",
+    badgeClass: "completed",
+  },
+  {
+    initials: "PS",
+    name: "Priya Sharma",
+    property: "2BHK Apartment, Kathmandu",
+    monthlyRent: "Rs. 15,000",
+    dueDate: "May 5, 2026",
+    status: "Paid",
+    amount: "Rs. 15,000",
+    rowClass: "completed",
+    badgeClass: "completed",
+  },
+  {
+    initials: "AP",
+    name: "Anuj Poudel",
+    property: "3BHK Flat, Bhaktapur",
+    monthlyRent: "Rs. 22,000",
+    dueDate: "May 5, 2026",
+    status: "Pending",
+    amount: "Rs. 0",
+    rowClass: "pending",
+    badgeClass: "pending",
   },
 ];
 
@@ -67,17 +77,22 @@ function NavItem({ icon, label, badge, badgeClass = "", active, onClick }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-function Messages() {
+export default function RentCollection() {
   const navigate = useNavigate();
-  const [activeNav, setActiveNav] = useState("Messages");
+  const [activeNav, setActiveNav] = useState("Rent Collection");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+
+  const goToMessages = () => {
+    navigate("/Messages");     // Make sure this matches your route
+  };
   return (
     <div className="dashboard-container">
 
       {/* ── Sidebar ── */}
       <aside className={`sidebar${sidebarOpen ? " open" : ""}`}>
 
+        {/* Logo */}
         <div className="logo">
           <div className="logo-icon">
             <FiHome size={22} />
@@ -85,6 +100,7 @@ function Messages() {
           <span className="logo-text">RoomFinder</span>
         </div>
 
+        {/* Navigation */}
         <nav className="nav-menu">
 
           <div className="nav-section">
@@ -104,7 +120,10 @@ function Messages() {
               label="My Listings"
               badge="12"
               active={activeNav === "My Listings"}
-              onClick={() => { setActiveNav("My Listings"); navigate("/my-listings"); }}
+              onClick={() => { 
+                setActiveNav("My Listings");
+                navigate("/My-listings")
+              }}
             />
             <NavItem
               icon={<FiPlus size={15} />}
@@ -122,7 +141,9 @@ function Messages() {
               badge="5"
               badgeClass="warning"
               active={activeNav === "Booking Requests"}
-              onClick={() => { setActiveNav("Booking Requests"); navigate("/Booking-Requests"); }}
+              onClick={() => {
+                setActiveNav("Booking Requests"); navigate("/Booking-Requests");
+              }}
             />
             <NavItem
               icon={<FiCheckCircle size={15} />}
@@ -137,7 +158,7 @@ function Messages() {
               label="Scheduled Visits"
               badge="3"
               active={activeNav === "Scheduled Visits"}
-              onClick={() => { setActiveNav("Scheduled Visits"); navigate("/Scheduled-visits"); }}
+              onClick={() => {setActiveNav("Scheduled Visits"); navigate("/Scheduled-Visits");}}
             />
           </div>
 
@@ -153,7 +174,7 @@ function Messages() {
               icon={<FiCreditCard size={15} />}
               label="Rent Collection"
               active={activeNav === "Rent Collection"}
-              onClick={() => { setActiveNav("Rent Collection"); navigate("/rent-collection"); }}
+              onClick={() => {setActiveNav("Rent Collection");}}
             />
           </div>
 
@@ -181,6 +202,7 @@ function Messages() {
 
         </nav>
 
+        {/* Sidebar Footer */}
         <div className="sidebar-footer">
           <button className="nav-item logout">
             <FiLogOut size={15} />
@@ -193,11 +215,16 @@ function Messages() {
       {/* ── Main Content ── */}
       <main className="main-content">
 
+        {/* Header */}
         <header className="header">
           <div className="header-left">
             <button className="menu-toggle" onClick={() => setSidebarOpen(prev => !prev)}>
               <FiMenu size={24} />
             </button>
+            <div className="search-box">
+              <FiSearch size={20} />
+              <input type="text" placeholder="Search rent collection..." />
+            </div>
           </div>
 
           <div className="header-right">
@@ -205,7 +232,7 @@ function Messages() {
               <FiBell size={20} />
               <span className="notification-dot" />
             </button>
-            <button className="header-btn message-btn">
+            <button className="header-btn message-btn" onClick={goToMessages}>
               <FiMessageSquare size={20} />
               <span className="message-count">7</span>
             </button>
@@ -224,30 +251,50 @@ function Messages() {
           </div>
         </header>
 
+        {/* Dashboard Content */}
         <div className="dashboard-content">
 
           <div className="page-header">
             <div className="page-title">
-              <h1>Messages</h1>
-              <p>Communicate with tenants and inquiries</p>
+              <h1>Rent Collection</h1>
+              <p>Track and manage tenant rent payments</p>
             </div>
           </div>
 
-          <div className="messages-list">
-            {messages.map((msg, i) => (
-              <div className={`message-item${msg.unread ? " unread" : ""}`} key={i}>
-                <div className="message-avatar">{msg.initials}</div>
-                <div className="message-info">
-                  <div className="message-header">
-                    <h4 className="message-sender">{msg.sender}</h4>
-                    <span className="message-time">{msg.time}</span>
-                  </div>
-                  <p className="message-preview">{msg.preview}</p>
-                  <p className="message-property">{msg.property}</p>
-                </div>
-                {msg.unread && <div className="message-unread-dot" />}
-              </div>
-            ))}
+          <div className="collection-table-wrapper">
+            <table className="collection-table">
+              <thead>
+                <tr>
+                  <th>Tenant Name</th>
+                  <th>Property</th>
+                  <th>Monthly Rent</th>
+                  <th>Due Date</th>
+                  <th>Status</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tenants.map((tenant, i) => (
+                  <tr className={tenant.rowClass} key={i}>
+                    <td>
+                      <div className="tenant-cell">
+                        <div className="tenant-avatar">{tenant.initials}</div>
+                        <span>{tenant.name}</span>
+                      </div>
+                    </td>
+                    <td>{tenant.property}</td>
+                    <td>{tenant.monthlyRent}</td>
+                    <td>{tenant.dueDate}</td>
+                    <td>
+                      <span className={`status-badge ${tenant.badgeClass}`}>
+                        {tenant.status}
+                      </span>
+                    </td>
+                    <td>{tenant.amount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
         </div>
@@ -256,4 +303,3 @@ function Messages() {
     </div>
   );
 }
-export default Messages;

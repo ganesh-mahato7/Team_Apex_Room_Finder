@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../css/Landlordglobal.css";
-import "../css/RentCollection.css";
+import "../../css/LandlordCss/Landlordglobal.css";
+import "../../css/LandlordCss/ScheduledVisit.css";
 
 import {
   FiHome,
@@ -23,39 +23,20 @@ import {
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
-const tenants = [
+const visits = [
   {
-    initials: "RK",
-    name: "Rajesh Koirala",
-    property: "Single Room, Lalitpur",
-    monthlyRent: "Rs. 8,000",
-    dueDate: "May 5, 2026",
-    status: "Paid",
-    amount: "Rs. 8,000",
-    rowClass: "completed",
-    badgeClass: "completed",
-  },
-  {
-    initials: "PS",
-    name: "Priya Sharma",
+    day: "18",
+    month: "May",
+    time: "2:30 PM - 3:00 PM",
+    guest: "Anuj Poudel",
     property: "2BHK Apartment, Kathmandu",
-    monthlyRent: "Rs. 15,000",
-    dueDate: "May 5, 2026",
-    status: "Paid",
-    amount: "Rs. 15,000",
-    rowClass: "completed",
-    badgeClass: "completed",
   },
   {
-    initials: "AP",
-    name: "Anuj Poudel",
+    day: "20",
+    month: "May",
+    time: "10:00 AM - 10:30 AM",
+    guest: "Sunita Rana",
     property: "3BHK Flat, Bhaktapur",
-    monthlyRent: "Rs. 22,000",
-    dueDate: "May 5, 2026",
-    status: "Pending",
-    amount: "Rs. 0",
-    rowClass: "pending",
-    badgeClass: "pending",
   },
 ];
 
@@ -77,13 +58,12 @@ function NavItem({ icon, label, badge, badgeClass = "", active, onClick }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export default function RentCollection() {
+function ScheduledVisits() {
   const navigate = useNavigate();
-  const [activeNav, setActiveNav] = useState("Rent Collection");
+  const [activeNav, setActiveNav] = useState("Scheduled Visits");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-
-  const goToMessages = () => {
+   const goToMessages = () => {
     navigate("/Messages");     // Make sure this matches your route
   };
   return (
@@ -92,7 +72,6 @@ export default function RentCollection() {
       {/* ── Sidebar ── */}
       <aside className={`sidebar${sidebarOpen ? " open" : ""}`}>
 
-        {/* Logo */}
         <div className="logo">
           <div className="logo-icon">
             <FiHome size={22} />
@@ -100,7 +79,6 @@ export default function RentCollection() {
           <span className="logo-text">RoomFinder</span>
         </div>
 
-        {/* Navigation */}
         <nav className="nav-menu">
 
           <div className="nav-section">
@@ -109,7 +87,7 @@ export default function RentCollection() {
               icon={<FiGrid size={15} />}
               label="Dashboard"
               active={activeNav === "Dashboard"}
-              onClick={() => { setActiveNav("Dashboard"); navigate("/"); }}
+              onClick={() => { setActiveNav("Dashboard"); navigate("/landlord-dashboard"); }}
             />
           </div>
 
@@ -120,10 +98,7 @@ export default function RentCollection() {
               label="My Listings"
               badge="12"
               active={activeNav === "My Listings"}
-              onClick={() => { 
-                setActiveNav("My Listings");
-                navigate("/My-listings")
-              }}
+              onClick={() => { setActiveNav("My Listings"); navigate("/my-listings"); }}
             />
             <NavItem
               icon={<FiPlus size={15} />}
@@ -141,9 +116,7 @@ export default function RentCollection() {
               badge="5"
               badgeClass="warning"
               active={activeNav === "Booking Requests"}
-              onClick={() => {
-                setActiveNav("Booking Requests"); navigate("/Booking-Requests");
-              }}
+              onClick={() => { setActiveNav("Booking Requests"); navigate("/Booking-Requests"); }}
             />
             <NavItem
               icon={<FiCheckCircle size={15} />}
@@ -158,7 +131,7 @@ export default function RentCollection() {
               label="Scheduled Visits"
               badge="3"
               active={activeNav === "Scheduled Visits"}
-              onClick={() => {setActiveNav("Scheduled Visits"); navigate("/Scheduled-Visits");}}
+              onClick={() => setActiveNav("Scheduled Visits")}
             />
           </div>
 
@@ -174,7 +147,7 @@ export default function RentCollection() {
               icon={<FiCreditCard size={15} />}
               label="Rent Collection"
               active={activeNav === "Rent Collection"}
-              onClick={() => {setActiveNav("Rent Collection");}}
+              onClick={() => { setActiveNav("Rent Collection"); navigate("/rent-collection"); }}
             />
           </div>
 
@@ -202,7 +175,6 @@ export default function RentCollection() {
 
         </nav>
 
-        {/* Sidebar Footer */}
         <div className="sidebar-footer">
           <button className="nav-item logout">
             <FiLogOut size={15} />
@@ -215,7 +187,6 @@ export default function RentCollection() {
       {/* ── Main Content ── */}
       <main className="main-content">
 
-        {/* Header */}
         <header className="header">
           <div className="header-left">
             <button className="menu-toggle" onClick={() => setSidebarOpen(prev => !prev)}>
@@ -223,7 +194,7 @@ export default function RentCollection() {
             </button>
             <div className="search-box">
               <FiSearch size={20} />
-              <input type="text" placeholder="Search rent collection..." />
+              <input type="text" placeholder="Search visits..." />
             </div>
           </div>
 
@@ -251,50 +222,33 @@ export default function RentCollection() {
           </div>
         </header>
 
-        {/* Dashboard Content */}
         <div className="dashboard-content">
 
           <div className="page-header">
             <div className="page-title">
-              <h1>Rent Collection</h1>
-              <p>Track and manage tenant rent payments</p>
+              <h1>Scheduled Visits</h1>
+              <p>Manage property visits and showings</p>
             </div>
           </div>
 
-          <div className="collection-table-wrapper">
-            <table className="collection-table">
-              <thead>
-                <tr>
-                  <th>Tenant Name</th>
-                  <th>Property</th>
-                  <th>Monthly Rent</th>
-                  <th>Due Date</th>
-                  <th>Status</th>
-                  <th>Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tenants.map((tenant, i) => (
-                  <tr className={tenant.rowClass} key={i}>
-                    <td>
-                      <div className="tenant-cell">
-                        <div className="tenant-avatar">{tenant.initials}</div>
-                        <span>{tenant.name}</span>
-                      </div>
-                    </td>
-                    <td>{tenant.property}</td>
-                    <td>{tenant.monthlyRent}</td>
-                    <td>{tenant.dueDate}</td>
-                    <td>
-                      <span className={`status-badge ${tenant.badgeClass}`}>
-                        {tenant.status}
-                      </span>
-                    </td>
-                    <td>{tenant.amount}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="visits-list">
+            {visits.map((visit, i) => (
+              <div className="visit-item" key={i}>
+                <div className="visit-date-box">
+                  <div className="visit-day">{visit.day}</div>
+                  <div className="visit-month">{visit.month}</div>
+                </div>
+                <div className="visit-content">
+                  <div className="visit-time">{visit.time}</div>
+                  <h3 className="visit-guest">{visit.guest}</h3>
+                  <p className="visit-property">{visit.property}</p>
+                </div>
+                <div className="visit-actions">
+                  <button className="btn btn-sm btn-success">Confirm</button>
+                  <button className="btn btn-sm btn-outline">Reschedule</button>
+                </div>
+              </div>
+            ))}
           </div>
 
         </div>
@@ -303,3 +257,4 @@ export default function RentCollection() {
     </div>
   );
 }
+export default ScheduledVisits;

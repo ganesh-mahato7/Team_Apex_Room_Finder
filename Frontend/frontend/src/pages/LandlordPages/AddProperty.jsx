@@ -1,4 +1,4 @@
-import "../css/AddProperty.css";
+import "../../css/LandlordCss/AddProperty.css";
 
 import {
   FiHome, FiMapPin, FiPhone, FiMail, FiDollarSign,
@@ -14,7 +14,7 @@ import {
   useAddPropertyLogic,
   propertyTypes,
   facilityOptions,
-} from "../scripts/AddProperty";    
+} from "../../scripts/LandlordScripts/AddProperty";    
 
 const typeIcons = {
   room:      <BiBuildingHouse size={22} />,

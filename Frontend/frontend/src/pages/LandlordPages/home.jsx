@@ -1,6 +1,6 @@
 import React from "react";
-import "../css/home.css";
-import house from "../assets/house.jpg";
+import "../../css/LandlordCss/home.css";
+import house from "../../assets/house.jpg";
 
 import { FiSearch, FiMapPin, FiHome, FiPlus, FiLogIn } from "react-icons/fi";
 import { MdApartment, MdOtherHouses } from "react-icons/md";
@@ -13,7 +13,7 @@ import {
   stats,
   tags,
   popularCities,
-} from "../scripts/home";       
+} from "../../scripts/LandlordScripts/home";       
 
 const exploreIcons = [
   <BiBuildingHouse size={24} />,

@@ -3,6 +3,10 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 
 const userRoute = require("./route/userRoute");
+const bookingRoute = require("./Route/BookingRequestRoute");
+const bookingRequestRoutes = require("./Route/BookingRequestRoute");
+const confirmedBookingRoutes = require("./Route/ConfirmedBookingRoute");
+
 
 dotenv.config();
 
@@ -19,6 +23,10 @@ app.get("/", (req, res) => {
 
 // API routes
 app.use("/api/v1/users", userRoute);
+app.use("/api", bookingRoute);
+app.use("/api", bookingRequestRoutes);
+app.use("/api", confirmedBookingRoutes);
+
 
 // 404 handler
 app.use((req, res) => {

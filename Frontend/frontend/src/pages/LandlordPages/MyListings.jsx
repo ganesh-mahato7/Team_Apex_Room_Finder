@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../css/Landlordglobal.css";
-import "../css/Mylisting.css";
+import "../../css/LandlordCss/Landlordglobal.css";
+import "../../css/LandlordCss/Mylisting.css";
 
 import {
   FiHome,

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../css/landlordStyle.css";
+import "../../css/LandlordCss/landlordStyle.css";
 
 // Feather Icons
 import {
@@ -30,9 +30,10 @@ import {
 import { MdBedroomParent, MdApartment, MdOtherHouses } from "react-icons/md";
 // import Messages from "./Messages";
 
+
 // ── Data ──────────────────────────────────────────────────────────────────────
 
-const bookingRequests = [
+const initialBookingRequests = [
   { initials: "RS", name: "Ram Sharma",   property: "2BHK Apartment, Kathmandu", date: "May 4, 2026", token: "Rs. 5,000" },
   { initials: "HP", name: "Hari Prasad",  property: "Single Room, Lalitpur",     date: "May 3, 2026", token: "Rs. 2,000" },
   { initials: "BG", name: "Binod Gurung", property: "3BHK Flat, Bhaktapur",      date: "May 2, 2026", token: "Rs. 8,000" },
@@ -113,6 +114,10 @@ function LandlordDashboard() {
   const [activeNav, setActiveNav]       = useState("Dashboard");
   const [activeFilter, setActiveFilter] = useState("All");
   const [sidebarOpen, setSidebarOpen]   = useState(false);
+  const [confirmedCount, setConfirmedCount] = useState(0);
+
+const [bookingRequests, setBookingRequests] =
+  useState(initialBookingRequests);
 
 
   // Navigation handler
@@ -189,14 +194,15 @@ function LandlordDashboard() {
               
               }}
             />
-            <NavItem
-              icon={<FiCheckCircle size={15} />}
-              label="Confirmed Bookings"
-              badge="8"
-              badgeClass="success"
-              active={activeNav === "Confirmed Bookings"}
-              onClick={() => {setActiveNav("Confirmed Bookings"); navigate("/Confirmed-Bookings")}}
+            <NavItem icon={<FiCheckCircle size={15} />} label="Confirmed Bookings"
+            badge={confirmedCount || undefined} badgeClass="success"
+            active={activeNav === "Confirmed Bookings"}
+            onClick={() => {
+            setActiveNav("Confirmed Bookings");
+            navigate("/Confirmed-Bookings");
+            }}
             />
+            
             <NavItem
               icon={<FiCalendar size={15} />}
               label="Scheduled Visits"
@@ -449,8 +455,28 @@ function LandlordDashboard() {
                         <span className="token-amount">{req.token}</span>
                       </div>
                       <div className="booking-actions">
-                        <button className="btn btn-sm btn-success">Accept</button>
-                        <button className="btn btn-sm btn-outline">Reject</button>
+                      <button
+                      className="btn btn-sm btn-success"
+                       onClick={() => {
+                        setConfirmedCount((prev) => prev + 1);
+
+                         setBookingRequests((prev) => prev.filter((item) => item.name !== req.name)
+                        );
+                   }}
+                    >
+                       Accept
+                        </button>
+
+                       <button
+                         className="btn btn-sm btn-outline"
+                    onClick={() => {
+    setBookingRequests((prev) =>
+      prev.filter((item) => item.name !== req.name)
+    );
+  }}
+>
+  Reject
+</button>
                       </div>
                     </div>
                   ))}
