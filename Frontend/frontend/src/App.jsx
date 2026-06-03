@@ -20,10 +20,12 @@ import Analytics      from "./pages/Admin/Analytics";
 import BlockedUsers   from "./pages/Admin/BlockedUsers";
 import Settings       from "./pages/Admin/Settings";
 
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         {/* Regular Routes */}
         <Route path="/"                      element={<Home />} />
         <Route path="/signin"                element={<SignIn />} />
@@ -43,6 +45,7 @@ function App() {
         <Route path="/admin/analytics"       element={<Analytics />} />
         <Route path="/admin/blocked-users"   element={<BlockedUsers />} />
         <Route path="/admin/settings"        element={<Settings />} />
+
       </Routes>
     </BrowserRouter>
   );

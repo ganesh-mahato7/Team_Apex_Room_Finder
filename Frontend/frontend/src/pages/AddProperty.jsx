@@ -1,8 +1,8 @@
 // pages/AddProperty.jsx
 
-import React from "react";
+
 import "../css/global.css";
-import "../css/AddProperty.css";
+
 
 import {
   FiHome, FiMapPin, FiPhone, FiMail, FiDollarSign,
