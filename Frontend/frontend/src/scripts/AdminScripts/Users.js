@@ -1,4 +1,7 @@
-// No import from Sidebar needed — we dispatch a custom event instead
+const authHeaders = () => ({
+  'Content-Type': 'application/json',
+  'Authorization': `Bearer ${localStorage.getItem('token')}`,
+});
 
 export const refreshSidebar = () => {
   window.dispatchEvent(new Event('sidebar-refresh'));
@@ -30,7 +33,10 @@ export const getFiltered = (users, activeFilter) => {
 export const handleBlockUser = async (u, API, onBlock) => {
   if (!window.confirm(`Block ${u.name}?`)) return;
   try {
-    await fetch(`${API}/admin/users/block/${u.id}`, { method: 'PUT' });
+    await fetch(`${API}/admin/users/block/${u.id}`, {
+      method: 'PUT',
+      headers: authHeaders(),
+    });
     onBlock(u.id);
     refreshSidebar();
     alert(`${u.name} has been blocked successfully!`);
@@ -44,7 +50,7 @@ export const handleSaveEdit = async (user, form, API, setSaving, setSuccess, onS
   try {
     const res  = await fetch(`${API}/admin/users/${user.id}`, {
       method:  'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(),
       body:    JSON.stringify(form),
     });
     const data = await res.json();
@@ -55,7 +61,6 @@ export const handleSaveEdit = async (user, form, API, setSaving, setSuccess, onS
     } else {
       alert(data.message || 'Failed to update user');
     }
-  // eslint-disable-next-line no-unused-vars
   } catch (err) {
     alert('Server error');
   }

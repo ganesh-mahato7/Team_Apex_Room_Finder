@@ -106,6 +106,10 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "Please activate your account first" });
     }
 
+    if (user.is_blocked) {
+      return res.status(403).json({ message: "Your account has been blocked. Please contact support." });
+    }
+
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(400).json({ message: "Invalid email or password" });
@@ -120,12 +124,7 @@ const login = async (req, res) => {
     res.json({
       message: "Login successful!",
       token,
-      user: {
-        id:    user.id,
-        name:  user.name,
-        email: user.email,
-        role:  user.role,
-      },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
     });
 
   } catch (err) {

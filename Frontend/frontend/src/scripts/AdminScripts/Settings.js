@@ -20,8 +20,15 @@ export const handleLogoChange = (e, setLogoPreview, setLogoName, setErrorMsg, se
     setLogoPreview(reader.result);
     setLogoName(file.name);
     setErrorMsg('');
+    setSuccessMsg('');
   };
   reader.readAsDataURL(file);
+};
+
+const broadcastLogo = () => {
+  window.dispatchEvent(new Event('logo-updated'));
+  // Also trigger storage event for cross-component sync
+  window.dispatchEvent(new StorageEvent('storage', { key: 'adminLogo' }));
 };
 
 export const handleSaveLogo = (logoPreview, setErrorMsg, setSuccessMsg) => {
@@ -30,12 +37,14 @@ export const handleSaveLogo = (logoPreview, setErrorMsg, setSuccessMsg) => {
     return;
   }
   localStorage.setItem('adminLogo', logoPreview);
-  setSuccessMsg('Logo updated successfully! Refresh the page to see it in the sidebar.');
+  broadcastLogo();
+  setSuccessMsg('Logo updated successfully!');
   setErrorMsg('');
 };
 
 export const handleRemoveLogo = (setLogoPreview, setLogoName, setSuccessMsg, setErrorMsg) => {
   localStorage.removeItem('adminLogo');
+  broadcastLogo();
   setLogoPreview(null);
   setLogoName('');
   setSuccessMsg('Logo removed. Default logo restored.');

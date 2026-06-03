@@ -33,7 +33,7 @@ function App() {
         <Route path="/add-property"          element={<AddProperty />} />
 
         {/* Admin Routes */}
-        <Route path="/admin"                 element={<AdminDashboard />} />
+        <Route path="/admin/dashboard"       element={<AdminDashboard />} />
         <Route path="/admin/users"           element={<Users />} />
         <Route path="/admin/listings"        element={<Listings />} />
         <Route path="/admin/reported"        element={<Reported />} />

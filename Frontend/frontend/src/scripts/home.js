@@ -1,9 +1,6 @@
-// scripts/home.js
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// ── Explore Category Cards ──
 export const exploreItems = [
   { title: "Rooms",      color: "#e8f1ff", iconColor: "#2b7fff" },
   { title: "Apartments", color: "#e8f4ee", iconColor: "#38a169" },
@@ -11,7 +8,6 @@ export const exploreItems = [
   { title: "Near You",   color: "#fde8e8", iconColor: "#e53e3e" },
 ];
 
-// ── Stats ──
 export const stats = [
   { value: "—", label: "Properties"    },
   { value: "—", label: "Locations"     },
@@ -19,20 +15,15 @@ export const stats = [
   { value: "—", label: "Landlords"     },
 ];
 
-// ── Filter Tags ──
-export const tags = ["All", "Room", "Apartment", "Flat"];
-
-// ── Popular Cities ──
+export const tags         = ["All", "Room", "Apartment", "Flat"];
 export const popularCities = ["Kathmandu", "Pokhara", "Lalitpur"];
 
-// ── Helper: get valid role ──
 function getRole() {
   const r = localStorage.getItem("role");
   if (!r || r === "null" || r === "undefined" || r === "") return null;
   return r;
 }
 
-// ── Custom Hook ──
 export function useHomeLogic() {
   const navigate = useNavigate();
 
@@ -40,18 +31,18 @@ export function useHomeLogic() {
   const [activeTag,   setActiveTag]   = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Re-check role whenever localStorage changes
   useEffect(() => {
     const handleStorage = () => setRole(getRole());
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  const goToAddProperty = () => navigate("/add-property");
-  const goToSignIn      = () => navigate("/signin");
-  const goToHome        = () => navigate("/");
-  const goToRooms       = () => navigate("/rooms");
-  const goToAbout       = () => navigate("/about");
+  const goToAddProperty    = () => navigate("/add-property");
+  const goToSignIn         = () => navigate("/signin");
+  const goToHome           = () => navigate("/");
+  const goToRooms          = () => navigate("/rooms");
+  const goToAbout          = () => navigate("/about");
+  const goToAdminDashboard = () => navigate("/admin/dashboard");
 
   const goToProperties = (category = "") => {
     if (category) {
@@ -61,15 +52,12 @@ export function useHomeLogic() {
     }
   };
 
-  const handleCityClick = (city) => setSearchQuery(city);
+  const handleCityClick     = (city) => setSearchQuery(city);
+  const handleSearchKeyDown = (e)    => { if (e.key === "Enter") handleSearch(); };
 
   const handleSearch = () => {
     if (!searchQuery.trim()) return;
     navigate(`/properties?search=${encodeURIComponent(searchQuery)}&type=${activeTag}`);
-  };
-
-  const handleSearchKeyDown = (e) => {
-    if (e.key === "Enter") handleSearch();
   };
 
   const handleLogout = () => {
@@ -92,6 +80,7 @@ export function useHomeLogic() {
     goToRooms,
     goToAbout,
     goToProperties,
+    goToAdminDashboard,
     handleCityClick,
     handleSearch,
     handleSearchKeyDown,

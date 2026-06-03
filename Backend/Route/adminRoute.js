@@ -1,5 +1,7 @@
-const express = require("express");
-const router  = express.Router();
+const express        = require("express");
+const router         = express.Router();
+const { protect }     = require("../middleware/authMiddleware");
+const { requireRole } = require("../middleware/roleMiddleware");
 
 const {
   getAllUsers,
@@ -15,23 +17,26 @@ const {
   reopenFeedback,
 } = require("../controller/adminController");
 
+// All admin routes protected
+router.use(protect, requireRole("admin"));
+
 // Users
-router.get("/users/all",          getAllUsers);
-router.put("/users/block/:id",    blockUser);
-router.put("/users/unblock/:id",  unblockUser);
-router.put("/users/:id",          updateUser);
+router.get("/users/all",              getAllUsers);
+router.put("/users/block/:id",        blockUser);
+router.put("/users/unblock/:id",      unblockUser);
+router.put("/users/:id",              updateUser);
 
 // Stats
-router.get("/stats",              getDashboardStats);
-router.get("/sidebar-stats",      getSidebarStats);
-router.get("/analytics",          getAnalyticsStats);
+router.get("/stats",                  getDashboardStats);
+router.get("/sidebar-stats",          getSidebarStats);
+router.get("/analytics",              getAnalyticsStats);
 
 // Payments
-router.get("/payments",           getAllPayments);
+router.get("/payments",               getAllPayments);
 
 // Feedback
-router.get("/feedback",           getAllFeedback);
-router.put("/feedback/resolve/:id", resolveFeedback);
-router.put("/feedback/reopen/:id",  reopenFeedback);
+router.get("/feedback",               getAllFeedback);
+router.put("/feedback/resolve/:id",   resolveFeedback);
+router.put("/feedback/reopen/:id",    reopenFeedback);
 
 module.exports = router;

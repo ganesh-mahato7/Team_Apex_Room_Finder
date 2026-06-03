@@ -1,10 +1,11 @@
-const dotenv    = require("dotenv");
+const dotenv     = require("dotenv");
 dotenv.config();
 
-const express   = require("express");
-const cors      = require("cors");
-const pool      = require("./database/db");
-const userRoute = require("./Route/userRoute");
+const express    = require("express");
+const cors       = require("cors");
+const pool       = require("./database/db");
+const userRoute  = require("./Route/userRoute");
+const adminRoute = require("./Route/adminRoute");
 
 const app = express();
 
@@ -27,8 +28,9 @@ app.get("/", (req, res) => {
   res.json({ message: "server is running" });
 });
 
-// User routes
-app.use("/api/v1/users", userRoute);
+// Routes
+app.use("/api/v1/users",  userRoute);
+app.use("/api/v1/admin",  adminRoute);
 
 // 404 handler
 app.use((req, res) => {
