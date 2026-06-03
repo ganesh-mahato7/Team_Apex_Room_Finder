@@ -1,177 +1,34 @@
 import "../css/RecentlyViewed.css";
-import "../css/globalstyle.css";
-import Sidebar from "../components/Sidebar";
+import Layout from "../components/Layout";
+
+const items = [
+  { title: "Cozy Room in Thamel",  loc: "Thamel, Kathmandu",  details: "250 sq ft • 1 bed • Shared Bath",   price: "Rs. 15,000/mo", time: "2 hours ago", cls: "room" },
+  { title: "Modern Flat in Patan", loc: "Patan, Lalitpur",    details: "450 sq ft • 2 bed • Attached Bath", price: "Rs. 25,000/mo", time: "Yesterday",   cls: "apt"  },
+  { title: "Studio in Bhaktapur",  loc: "Bhaktapur",          details: "300 sq ft • Studio • Private Bath", price: "Rs. 12,000/mo", time: "Mar 14",      cls: "flat" },
+  { title: "Luxury Apartment",     loc: "Boudha, Kathmandu",  details: "600 sq ft • 3 bed • 2 Baths",       price: "Rs. 40,000/mo", time: "Mar 12",      cls: "room" },
+  { title: "Spacious Room",        loc: "Kathmandu",          details: "350 sq ft • 1 bed • Attached Bath", price: "Rs. 18,000/mo", time: "Mar 10",      cls: "apt"  },
+];
 
 const RecentlyViewed = () => {
   return (
-    <div className="dashboard-container">
-
-      <Sidebar />
-
-      <main className="main-content">
-
-        <header className="header">
-          <div className="header-left">
-            <button className="menu-toggle">☰</button>
+    <Layout>
+      <div className="page-header">
+        <div className="page-title"><h1>Recently Viewed</h1><p>Listings you've recently browsed</p></div>
+      </div>
+      <div className="section">
+        <div className="section-header"><h3>Your Browse History</h3></div>
+        {items.map(({ title, loc, details, price, time, cls }) => (
+          <div className="recent-item" key={title}>
+            <div className={`recent-image ${cls}`} />
+            <div className="recent-info"><h4>{title}</h4><p>{loc}</p><span>{details}</span></div>
+            <div className="recent-price">{price}</div>
+            <span className="recent-time">Viewed {time}</span>
+            <button className="save-btn">🤍</button>
+            <button className="btn btn-sm btn-primary">View</button>
           </div>
-
-          <div className="header-right">
-            <button className="header-btn">🔔</button>
-
-            <button className="header-btn">
-              💬 <span className="message-count">4</span>
-            </button>
-
-            <div className="user-profile">
-              <div className="user-avatar">RS</div>
-
-              <div className="user-info">
-                <span className="user-name">Ram Sharma</span>
-                <span className="user-role">Room Seeker</span>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <div className="dashboard-content">
-
-          <div className="page-header">
-            <div className="page-title">
-              <h1>Recently Viewed</h1>
-              <p>Listings you've recently browsed</p>
-            </div>
-          </div>
-
-          <div className="section">
-
-            <div className="section-header">
-              <h3>Your Browse History</h3>
-            </div>
-
-            <div className="recent-item">
-              <div className="recent-image room"></div>
-
-              <div className="recent-info">
-                <h4>Cozy Room in Thamel</h4>
-                <p>Thamel, Kathmandu</p>
-                <span>250 sq ft • 1 bed • Shared Bath</span>
-              </div>
-
-              <div className="recent-price">
-                Rs. 15,000/mo
-              </div>
-
-              <span className="recent-time">
-                Viewed 2 hours ago
-              </span>
-
-              <button className="save-btn">🤍</button>
-
-              <button className="btn btn-sm btn-primary">
-                View
-              </button>
-            </div>
-
-            <div className="recent-item">
-              <div className="recent-image apt"></div>
-
-              <div className="recent-info">
-                <h4>Modern Flat in Patan</h4>
-                <p>Patan, Lalitpur</p>
-                <span>450 sq ft • 2 bed • Attached Bath</span>
-              </div>
-
-              <div className="recent-price">
-                Rs. 25,000/mo
-              </div>
-
-              <span className="recent-time">
-                Viewed Yesterday
-              </span>
-
-              <button className="save-btn">🤍</button>
-
-              <button className="btn btn-sm btn-primary">
-                View
-              </button>
-            </div>
-
-            <div className="recent-item">
-              <div className="recent-image flat"></div>
-
-              <div className="recent-info">
-                <h4>Studio in Bhaktapur</h4>
-                <p>Bhaktapur</p>
-                <span>300 sq ft • Studio • Private Bath</span>
-              </div>
-
-              <div className="recent-price">
-                Rs. 12,000/mo
-              </div>
-
-              <span className="recent-time">
-                Viewed Mar 14
-              </span>
-
-              <button className="save-btn">🤍</button>
-
-              <button className="btn btn-sm btn-primary">
-                View
-              </button>
-            </div>
-
-            <div className="recent-item">
-              <div className="recent-image room"></div>
-
-              <div className="recent-info">
-                <h4>Luxury Apartment</h4>
-                <p>Boudha, Kathmandu</p>
-                <span>600 sq ft • 3 bed • 2 Baths</span>
-              </div>
-
-              <div className="recent-price">
-                Rs. 40,000/mo
-              </div>
-
-              <span className="recent-time">
-                Viewed Mar 12
-              </span>
-
-              <button className="save-btn">🤍</button>
-
-              <button className="btn btn-sm btn-primary">
-                View
-              </button>
-            </div>
-
-            <div className="recent-item">
-              <div className="recent-image apt"></div>
-
-              <div className="recent-info">
-                <h4>Spacious Room</h4>
-                <p>Kathmandu</p>
-                <span>350 sq ft • 1 bed • Attached Bath</span>
-              </div>
-
-              <div className="recent-price">
-                Rs. 18,000/mo
-              </div>
-
-              <span className="recent-time">
-                Viewed Mar 10
-              </span>
-
-              <button className="save-btn">🤍</button>
-
-              <button className="btn btn-sm btn-primary">
-                View
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </main>
-    </div>
+        ))}
+      </div>
+    </Layout>
   );
 };
 
