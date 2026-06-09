@@ -1,4 +1,18 @@
+<<<<<<< HEAD
 const dotenv     = require("dotenv");
+=======
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+
+const userRoute = require("./route/userRoute");
+const bookingRoute = require("./Route/BookingRequestRoute");
+const bookingRequestRoutes = require("./Route/BookingRequestRoute");
+const confirmedBookingRoutes = require("./Route/ConfirmedBookingRoute");
+const scheduledVisitsRoute = require("./Route/Scheduledvisitsroute");
+
+
+>>>>>>> kumar
 dotenv.config();
 
 const express    = require("express");
@@ -23,6 +37,7 @@ pool.query("SELECT NOW()", (err, res) => {
   }
 });
 
+<<<<<<< HEAD
 // Test route
 app.get("/", (req, res) => {
   res.json({ message: "server is running" });
@@ -31,6 +46,14 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/v1/users",  userRoute);
 app.use("/api/v1/admin",  adminRoute);
+=======
+// API routes
+app.use("/api/v1/users", userRoute);
+app.use("/api", bookingRoute);
+app.use("/api", bookingRequestRoutes);
+app.use("/api", confirmedBookingRoutes);
+app.use("/api/scheduled-visits", scheduledVisitsRoute);
+>>>>>>> kumar
 
 // 404 handler
 app.use((req, res) => {
