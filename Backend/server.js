@@ -6,6 +6,7 @@ const userRoute = require("./route/userRoute");
 const bookingRoute = require("./Route/BookingRequestRoute");
 const bookingRequestRoutes = require("./Route/BookingRequestRoute");
 const confirmedBookingRoutes = require("./Route/ConfirmedBookingRoute");
+const scheduledVisitsRoute = require("./Route/Scheduledvisitsroute");
 
 
 dotenv.config();
@@ -26,7 +27,7 @@ app.use("/api/v1/users", userRoute);
 app.use("/api", bookingRoute);
 app.use("/api", bookingRequestRoutes);
 app.use("/api", confirmedBookingRoutes);
-
+app.use("/api/scheduled-visits", scheduledVisitsRoute);
 
 // 404 handler
 app.use((req, res) => {
