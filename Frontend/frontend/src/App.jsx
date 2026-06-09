@@ -21,6 +21,14 @@ import Analytics      from "./pages/Admin/Analytics";
 import BlockedUsers   from "./pages/Admin/BlockedUsers";
 import Settings       from "./pages/Admin/Settings";
 
+// Landlord pages
+import LandlordDashboard from "./pages/LandlordPages/LandlordDashboard";
+import RentCollection from "./pages/LandlordPages/RentCollection";
+import MyListings from "./pages/LandlordPages/MyListings";
+import BookingRequests from "./pages/LandlordPages/BookingRequests";
+import Messages from "./pages/LandlordPages/Messages";
+import ScheduledVisits from "./pages/LandlordPages/ScheduledVisits";
+import ConfirmedBookings from "./pages/LandlordPages/ConfirmedBookings";
 
 
 
@@ -50,6 +58,14 @@ function App() {
         <Route path="/admin/blocked-users"   element={<BlockedUsers />} />
         <Route path="/admin/settings"        element={<Settings />} />
 
+        {/* Landlord Routes */}
+        <Route path="/landlord/dashboard"    element={<LandlordDashboard />} />
+        <Route path="/landlord/rent-collection" element={<RentCollection />} />
+        <Route path="/landlord/my-listings"   element={<MyListings />} />
+        <Route path="/landlord/booking-requests" element={<BookingRequests />} />
+        <Route path="/landlord/messages"     element={<Messages />} />
+        <Route path="/landlord/scheduled-visits" element={<ScheduledVisits />} />
+        <Route path="/landlord/confirmed-bookings" element={<ConfirmedBookings />} />
 
       </Routes>
     </BrowserRouter>
