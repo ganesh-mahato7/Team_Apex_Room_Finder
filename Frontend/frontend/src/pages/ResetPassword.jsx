@@ -1,6 +1,6 @@
 // pages/ResetPassword.jsx
 
-import React from "react";
+
 import "../css/global.css";
 import "../css/ResetPassword.css";
 

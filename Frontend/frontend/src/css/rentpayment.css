@@ -1,0 +1,901 @@
+/* CSS Reset & Base Styles */
+/* * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #2563eb;
+    --primary-dark: #1d4ed8;
+    --secondary-color: #64748b;
+    --success-color: #22c55e;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --background: #f8fafc;
+    --surface: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --sidebar-bg: #1e293b;
+    --sidebar-text: #94a3b8;
+    --sidebar-active: #ffffff;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background);
+    color: var(--text-primary);
+    line-height: 1.6;
+} */
+
+/* Dashboard Container */
+/* .dashboard-container {
+    display: flex;
+    min-height: 100vh;
+} */
+
+/* Sidebar Styles */
+/* .sidebar {
+    width: 280px;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+} */
+
+/* .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+} */
+
+/* .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--sidebar-active);
+}
+
+.nav-menu {
+    flex: 1;
+    padding: 20px 0;
+}
+
+.nav-section {
+    margin-bottom: 24px;
+}
+
+.nav-section-title {
+    display: block;
+    padding: 0 20px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--secondary-color);
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--sidebar-active);
+}
+
+.nav-item.active {
+    background-color: rgba(37, 99, 235, 0.2);
+    color: var(--sidebar-active);
+    border-right: 3px solid var(--primary-color);
+} */
+
+/* .nav-item svg {
+    flex-shrink: 0;
+} */
+
+/* .sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+} */
+
+/* .logout {
+    color: var(--danger-color) !important;
+} */
+
+/* .logout:hover {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+} */
+
+/* Main Content */
+/* .main-content {
+    flex: 1;
+    margin-left: 280px;
+    min-height: 100vh;
+} */
+
+/* Header */
+/* .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+} */
+
+/* .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+} */
+
+/* .header-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background-color: var(--background);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    position: relative;
+    transition: all 0.2s ease;
+} */
+
+/* .header-btn:hover {
+    background-color: var(--border-color);
+    color: var(--text-primary);
+} */
+
+/* .notification-dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--danger-color);
+    border-radius: 50%;
+}
+
+.message-count {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    background-color: var(--warning-color);
+    border-radius: 9px;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */
+
+/* .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+} */
+
+/* .page-title-header {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+} */
+
+
+
+/* .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background-color: var(--background);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: var(--primary-color);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.user-role {
+    font-size: 12px;
+    color: var(--text-secondary);
+} */
+
+/* Dashboard Content */
+/* .dashboard-content {
+    padding: 32px;
+} */
+
+/* .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.page-title h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.page-title p {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+} */
+
+/* Buttons */
+/* .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+} */
+
+/* .btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-outline:hover {
+    background-color: var(--background);
+} */
+
+
+/* .filter-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    background-color: var(--surface);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
+} */
+
+/* .filter-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+} */
+
+/* @media (max-width: 1024px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .menu-toggle {
+        display: block;
+    }
+} */
+.badge {
+    margin-left: auto;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 10px;
+    background-color: var(--primary-color);
+    color: white;
+}
+/* Payment Overview */
+.payment-overview {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.overview-card {
+    background-color: var(--surface);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.overview-card.current-rent {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.card-icon {
+    width: 64px;
+    height: 64px;
+    background-color: rgba(37, 99, 235, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.card-content {
+    flex: 1;
+}
+
+.card-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-content h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 4px 0 12px;
+}
+
+.rent-details {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.rent-amount .amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.rent-amount .period {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.due-date .label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.due-date .date {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.due-date .date.warning {
+    color: var(--warning-color);
+}
+
+.stats-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.stat-row {
+    display: flex;
+    gap: 16px;
+}
+
+.stat-box {
+    flex: 1;
+    padding: 16px;
+    background-color: var(--background);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-box .stat-value {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.stat-box .stat-value.success {
+    color: var(--success-color);
+}
+
+.stat-box .stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Quick Pay Section */
+.quick-pay-section {
+    background-color: var(--surface);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.quick-pay-section h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+}
+
+.payment-methods {
+    display: flex;
+    gap: 16px;
+}
+
+.payment-method {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px;
+    background-color: var(--background);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.payment-method:hover {
+    border-color: var(--primary-color);
+}
+
+.method-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+}
+
+.method-icon.esewa {
+    background-color: #60bb46;
+}
+
+.method-icon.khalti {
+    background-color: #5c2d91;
+}
+
+.method-icon.bank {
+    background-color: var(--primary-color);
+}
+
+.method-icon.connectips {
+    background-color: #003399;
+}
+
+.method-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Payment Filters */
+.payment-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+
+/* Payment History Card */
+.payment-history-card {
+    background-color: var(--surface);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 32px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.header-controls {
+    display: flex;
+    gap: 12px;
+}
+
+.month-filter {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--surface);
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.payment-history-card .card-content {
+    padding: 0;
+    overflow-x: auto;
+}
+
+/* Payment Table */
+.payment-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.payment-table th,
+.payment-table td {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.payment-table th {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    background-color: var(--background);
+}
+
+.payment-table td {
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.payment-table tbody tr:hover {
+    background-color: var(--background);
+}
+
+.payment-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.transaction-id {
+    font-family: monospace;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.description {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.description .type {
+    font-weight: 500;
+}
+
+.description .type.rent {
+    color: var(--primary-color);
+}
+
+.description .type.token {
+    color: var(--warning-color);
+}
+
+.description .type.refund {
+    color: var(--success-color);
+}
+
+.description .month {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.amount {
+    font-weight: 600;
+}
+
+.amount.refund {
+    color: var(--success-color);
+}
+
+/* Method Badge */
+.method-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 6px;
+    color: white;
+}
+
+.method-badge.esewa {
+    background-color: #60bb46;
+}
+
+.method-badge.khalti {
+    background-color: #5c2d91;
+}
+
+.method-badge.bank {
+    background-color: var(--secondary-color);
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+.status-badge.success {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: var(--success-color);
+}
+
+.status-badge.pending {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
+}
+
+.status-badge.failed {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}
+
+/* Action Button */
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background-color: var(--background);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.pagination-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    background-color: var(--surface);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-primary);
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background-color: var(--background);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-numbers {
+    display: flex;
+    gap: 8px;
+}
+
+.page-number {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    background-color: var(--surface);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-primary);
+}
+
+.page-number:hover {
+    background-color: var(--background);
+}
+
+.page-number.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .payment-overview {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .header {
+        padding: 12px 16px;
+    }
+    
+    .dashboard-content {
+        padding: 16px;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .user-info {
+        display: none;
+    }
+    
+    .overview-card.current-rent {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .rent-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .payment-methods {
+        flex-wrap: wrap;
+    }
+    
+    .payment-method {
+        flex: 1 1 calc(50% - 8px);
+        min-width: 120px;
+    }
+    
+    .payment-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .payment-filters {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 8px;
+    }
+    
+    .filter-btn {
+        white-space: nowrap;
+    }
+    
+    .stat-row {
+        flex-direction: column;
+    }
+    
+    .payment-method {
+        flex: 1 1 100%;
+    }
+}

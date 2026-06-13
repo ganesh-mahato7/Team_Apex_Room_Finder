@@ -1,10 +1,10 @@
 // pages/Register.jsx
 
-import React from "react";
+
 import "../css/global.css";
 import "../css/Register.css";
 
-import { FiUser, FiMail, FiLock, FiHome, FiArrowLeft } from "react-icons/fi";
+import { FiUser, FiMail, FiLock, } from "react-icons/fi";
 import { MdApartment } from "react-icons/md";
 
 import { useRegisterLogic } from "../scripts/Register";
