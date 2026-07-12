@@ -1,292 +1,217 @@
-import { useState, useEffect } from 'react';
-import Sidebar from '../../components/Sidebar';
-import '../../css/AdminCss/Users.css';
-import '../../css/AdminCss/Sidebar.css';
-import { FiEye, FiEdit2, FiSlash, FiBell, FiMenu, FiSearch, FiUnlock } from 'react-icons/fi';
-import { FaUserCircle } from 'react-icons/fa';
-import { getInitials, filterLabels, countFor, getFiltered, handleSaveEdit } from '../../scripts/AdminScripts/Users.js';
-import { refreshSidebar } from '../../scripts/AdminScripts/Sidebar.js';
+import { useEffect, useState } from 'react';
+import { FaUsers, FaSearch, FaBan, FaCheckCircle, FaUserShield, FaEnvelope, FaIdCard, FaTimesCircle, FaTimes } from 'react-icons/fa';
+import api from '../../services/api.js';
+import toast from 'react-hot-toast';
+import { formatDate } from '../../utils/helpers.js';
+import Loader from '../../components/common/Loader.jsx';
 
-const API = 'http://localhost:5000/api/v1';
-const authHeaders = () => ({
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${localStorage.getItem('token')}`,
-});
+const AdminUsers = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [modal, setModal] = useState(null);
+  const [note, setNote] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-const fmtDate = (d) => new Date(d).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
-const fmtDateLong = (d) => new Date(d).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const fetchUsers = () => {
+    setLoading(true);
+    api.get('/admin/users')
+      .then(res => setUsers(res.data.data.users))
+      .catch(() => setUsers([]))
+      .finally(() => setLoading(false));
+  };
 
-// ── VIEW MODAL ──
-function ViewModal({ user, onClose }) {
-  if (!user) return null;
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3>User Details</h3>
-          <button className="modal-close" onClick={onClose}>✕</button>
-        </div>
-        <div className="modal-body">
-          <div className="modal-avatar">{getInitials(user.name)}</div>
-          <div className="modal-info">
-            {[
-              ['Name',         user.name],
-              ['Email',        user.email],
-              ['Role',         <span style={{textTransform:'capitalize'}}>{user.role}</span>],
-              ['Status',       <span className={`badge-status ${user.is_active ? 'active' : 'inactive'}`}>{user.is_active ? 'Active' : 'Inactive'}</span>],
-              ['Verification', <span className={`badge-verify ${user.is_active ? 'verified' : 'unverified'}`}>{user.is_active ? 'Verified' : 'Unverified'}</span>],
-              ['Joined',       fmtDateLong(user.created_at)],
-              ['Blocked',      user.is_blocked ? 'Yes' : 'No'],
-            ].map(([label, value]) => (
-              <div className="modal-row" key={label}>
-                <span className="modal-label">{label}</span>
-                <span className="modal-value">{value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="modal-footer">
-          <button className="btn btn-outline" onClick={onClose}>Close</button>
-        </div>
-      </div>
-    </div>
+  useEffect(() => { fetchUsers(); }, []);
+
+  const handleBan = async (id, isBanned, name) => {
+    if (!confirm(`${isBanned ? 'Unban' : 'Ban'} ${name}?`)) return;
+    try {
+      const res = await api.patch(`/admin/users/${id}/ban`);
+      toast.success(res.data.message);
+      fetchUsers();
+    } catch { toast.error('Failed'); }
+  };
+
+  const handleVerifyIdentity = async () => {
+    setSubmitting(true);
+    try {
+      await api.patch(`/admin/users/${modal.user.id}/verify-identity`, { status: modal.action, adminNote: note });
+      toast.success(`Identity ${modal.action}`);
+      setModal(null); setNote('');
+      fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed');
+    } finally { setSubmitting(false); }
+  };
+
+  const filtered = users.filter(u =>
+    u.name.toLowerCase().includes(search.toLowerCase()) ||
+    u.email.toLowerCase().includes(search.toLowerCase())
   );
-}
 
-// ── EDIT MODAL ──
-function EditModal({ user, onClose, onSave }) {
-  const [form,    setForm]    = useState({ name: user.name, email: user.email, role: user.role });
-  const [saving,  setSaving]  = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3>Edit User</h3>
-          <button className="modal-close" onClick={onClose}>✕</button>
-        </div>
-        <div className="modal-body">
-          {success ? (
-            <div className="success-msg">User updated successfully!</div>
-          ) : (
-            <div className="edit-form">
-              {[
-                { label: 'Name',  type: 'text',  field: 'name' },
-                { label: 'Email', type: 'email', field: 'email' },
-              ].map(({ label, type, field }) => (
-                <div className="form-group" key={field}>
-                  <label>{label}</label>
-                  <input type={type} value={form[field]} onChange={e => setForm({ ...form, [field]: e.target.value })} />
-                </div>
-              ))}
-              <div className="form-group">
-                <label>Role</label>
-                <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
-                  <option value="user">User</option>
-                  <option value="landlord">Landlord</option>
-                  <option value="tenant">Tenant</option>
-                </select>
-              </div>
-            </div>
-          )}
-        </div>
-        {!success && (
-          <div className="modal-footer">
-            <button className="btn btn-outline" onClick={onClose}>Cancel</button>
-            <button className="btn btn-primary" onClick={() => handleSaveEdit(user, form, API, setSaving, setSuccess, onSave, onClose)} disabled={saving}>
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── USER TABLE ──
-function UserTable({ users, onToggleBlock, onUpdate, role }) {
-  const [activeFilter, setActiveFilter] = useState(`All ${role}`);
-  const [viewUser,     setViewUser]     = useState(null);
-  const [editUser,     setEditUser]     = useState(null);
-
-  const labels   = filterLabels(role);
-  const filtered = getFiltered(users, activeFilter);
+  const verificationBadge = (status) => {
+    const map = {
+      approved: { bg: '#E5EADF', color: '#566B4A', label: 'Verified' },
+      pending:  { bg: '#FEF3D9', color: '#B45309', label: 'Pending review' },
+      rejected: { bg: '#FBE9E5', color: '#C1442E', label: 'Rejected' },
+      none:     { bg: '#F3E9D8', color: '#8A7B6C', label: 'Not submitted' },
+    };
+    const s = map[status] || map.none;
+    return (
+      <span style={{ background: s.bg, color: s.color, padding: '3px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600 }}>
+        {s.label}
+      </span>
+    );
+  };
 
   return (
-    <>
-      {viewUser && <ViewModal user={viewUser} onClose={() => setViewUser(null)} />}
-      {editUser && (
-        <EditModal
-          user={editUser}
-          onClose={() => setEditUser(null)}
-          onSave={(updated) => { onUpdate(updated); setEditUser(null); }}
-        />
-      )}
-
-      <div className="filter-section">
-        <div className="filter-tabs">
-          {labels.map(label => (
-            <button key={label} className={`filter-tab ${activeFilter === label ? 'active' : ''}`} onClick={() => setActiveFilter(label)}>
-              <span>{label}</span>
-              <span className="count">{countFor(users, label)}</span>
-            </button>
-          ))}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+        <div>
+          <h1 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text, #3D2B1F)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <FaUsers style={{ color: '#C9662D' }} /> Users
+          </h1>
+          <p style={{ fontSize: '13px', color: '#8A7B6C', margin: '4px 0 0' }}>{users.length} registered users</p>
+        </div>
+        <div style={{ position: 'relative' }}>
+          <FaSearch style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#8A7B6C', fontSize: '13px' }} />
+          <input value={search} onChange={e => setSearch(e.target.value)}
+            placeholder="Search name or email..."
+            className="input" style={{ paddingLeft: '36px', width: '260px' }} />
         </div>
       </div>
 
-      <div className="card"><div className="card-content">
-        {filtered.length === 0 ? (
-          <div className="no-data">No {role.toLowerCase()} found.</div>
-        ) : (
-          <table className="data-table">
+      {loading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '80px 0' }}><Loader size="lg" /></div>
+      ) : (
+        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <table>
             <thead>
-              <tr><th>User</th><th>Email</th><th>Joined</th><th>Status</th><th>Verification</th><th>Blocked</th><th>Actions</th></tr>
+              <tr>
+                {['User', 'Role', 'Identity', 'Account', 'Joined', 'Action'].map(h => <th key={h}>{h}</th>)}
+              </tr>
             </thead>
             <tbody>
               {filtered.map(u => (
-                <tr key={u.id}>
+                <tr key={u.id} style={{ opacity: u.is_banned ? 0.65 : 1 }}>
                   <td>
-                    <div className="user-row">
-                      <div className="user-avatar">{getInitials(u.name)}</div>
-                      <span>{u.name}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#C9662D,#A8511F)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '13px', fontWeight: 700, flexShrink: 0 }}>
+                        {u.name[0]?.toUpperCase()}
+                      </div>
+                      <div>
+                        <p style={{ fontWeight: 600, color: '#3D2B1F', margin: 0, fontSize: '14px' }}>{u.name}</p>
+                        <p style={{ fontSize: '12px', color: '#8A7B6C', margin: 0 }}>{u.email}</p>
+                      </div>
                     </div>
                   </td>
-                  <td>{u.email}</td>
-                  <td>{fmtDate(u.created_at)}</td>
-                  <td><span className={`badge-status ${u.is_active ? 'active' : 'inactive'}`}>{u.is_active ? 'Active' : 'Inactive'}</span></td>
-                  <td><span className={`badge-verify ${u.is_active ? 'verified' : 'unverified'}`}>{u.is_active ? 'Verified' : 'Unverified'}</span></td>
-                  <td><span className={`badge-status ${u.is_blocked ? 'inactive' : 'active'}`}>{u.is_blocked ? 'Blocked' : 'No'}</span></td>
                   <td>
-                    <div className="action-buttons">
-                      <button className="action-btn view"   title="View"   onClick={() => setViewUser(u)}><FiEye /></button>
-                      <button className="action-btn edit"   title="Edit"   onClick={() => setEditUser(u)}><FiEdit2 /></button>
-                      {u.is_blocked ? (
-                        <button className="action-btn unblock" title="Unblock" onClick={() => onToggleBlock(u, false)}><FiUnlock /></button>
-                      ) : (
-                        <button className="action-btn block"   title="Block"   onClick={() => onToggleBlock(u, true)}><FiSlash /></button>
-                      )}
-                    </div>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, background: u.role === 'landlord' ? '#F3DDC9' : '#E5EADF', color: u.role === 'landlord' ? '#A8511F' : '#566B4A', textTransform: 'capitalize' }}>
+                      {u.role === 'landlord' ? <FaUserShield style={{ fontSize: '10px' }} /> : <FaUsers style={{ fontSize: '10px' }} />}
+                      {u.role}
+                    </span>
+                  </td>
+                  <td>
+                    {verificationBadge(u.verification_status)}
+                    {u.role === 'user' && u.verification_status === 'pending' && (
+                      <button
+                        onClick={() => setModal({ user: u, action: 'approved' })}
+                        style={{ display: 'block', marginTop: '4px', background: 'none', border: 'none', color: '#C9662D', fontSize: '12px', fontWeight: 600, cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
+                      >
+                        Review
+                      </button>
+                    )}
+                  </td>
+                  <td>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600, background: u.is_banned ? '#FBE9E5' : '#E5EADF', color: u.is_banned ? '#C1442E' : '#566B4A' }}>
+                      {u.is_banned ? <FaBan style={{ fontSize: '10px' }} /> : <FaCheckCircle style={{ fontSize: '10px' }} />}
+                      {u.is_banned ? 'Banned' : 'Active'}
+                    </span>
+                  </td>
+                  <td style={{ fontSize: '13px', color: '#8A7B6C' }}>{formatDate(u.created_at)}</td>
+                  <td>
+                    <button onClick={() => handleBan(u.id, u.is_banned, u.name)}
+                      className="btn btn-sm"
+                      style={{ background: u.is_banned ? '#E5EADF' : '#FBE9E5', color: u.is_banned ? '#566B4A' : '#C1442E', border: 'none', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      {u.is_banned ? <><FaCheckCircle style={{ fontSize: '11px' }} />Unban</> : <><FaBan style={{ fontSize: '11px' }} />Ban</>}
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        )}
-      </div></div>
-    </>
-  );
-}
-
-// ── TABS CONFIG ──
-const TABS = [
-  { id: 'users',     label: 'Users',     role: 'Users' },
-  { id: 'landlords', label: 'Landlords', role: 'Landlords' },
-  { id: 'tenants',   label: 'Tenants',   role: 'Tenants' },
-];
-
-// ── MAIN USERS PAGE ──
-function Users() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab,   setActiveTab]   = useState('users');
-  const [allUsers,    setAllUsers]    = useState([]);
-  const [loading,     setLoading]     = useState(true);
-
-  useEffect(() => {
-    fetch(`${API}/admin/users/all`, { headers: authHeaders() })
-      .then(res => res.json())
-      .then(data => { setAllUsers(Array.isArray(data) ? data : []); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, []);
-
-  // Toggle block/unblock without page refresh
-  const handleToggleBlock = async (user, block) => {
-    const endpoint = block ? 'block' : 'unblock';
-    try {
-      const res = await fetch(`${API}/admin/users/${endpoint}/${user.id}`, {
-        method: 'PUT',
-        headers: authHeaders(),
-      });
-      if (res.ok) {
-        setAllUsers(prev => prev.map(u => u.id === user.id ? { ...u, is_blocked: block } : u));
-        refreshSidebar();
-      } else {
-        alert(`Failed to ${endpoint} user`);
-      }
-    } catch {
-      alert('Server error');
-    }
-  };
-
-  const handleUpdate = (updated) => setAllUsers(prev => prev.map(u => u.id === updated.id ? updated : u));
-
-  const users     = allUsers.filter(u => u.role === 'user');
-  const landlords = allUsers.filter(u => u.role === 'landlord');
-  const tenants   = allUsers.filter(u => u.role === 'tenant');
-  const counts    = { users: users.length, landlords: landlords.length, tenants: tenants.length };
-  const dataMap   = { users, landlords, tenants };
-
-  return (
-    <div className="dashboard-container">
-      <Sidebar open={sidebarOpen} />
-      <main className="main-content">
-
-        <header className="header">
-          <div className="header-left">
-            <button className="menu-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}><FiMenu size={24} /></button>
-            <div className="search-box">
-              <FiSearch size={20} />
-              <input type="text" placeholder="Search users..." />
-            </div>
-          </div>
-          <div className="header-right">
-            <button className="header-btn"><FiBell size={20} /><span className="notification-dot"></span></button>
-            <div className="admin-profile">
-              <div className="admin-avatar"><FaUserCircle size={24} /></div>
-              <div className="admin-info">
-                <span className="admin-name">Admin User</span>
-                <span className="admin-role">Super Admin</span>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <div className="dashboard-content">
-          <div className="page-header">
-            <div className="page-title">
-              <h1>User Management</h1>
-              <p>Manage all users, landlords, and tenants from one place</p>
-            </div>
-          </div>
-
-          <div className="user-tab-switcher">
-            {TABS.map(t => (
-              <button key={t.id} className={`user-tab-btn ${activeTab === t.id ? 'active' : ''}`} onClick={() => setActiveTab(t.id)}>
-                <span className="user-tab-label">{t.label}</span>
-                <span className="user-tab-count">{counts[t.id]}</span>
-              </button>
-            ))}
-          </div>
-
-          {loading ? (
-            <div className="loading">Loading users...</div>
-          ) : (
-            <div className="tab-content-area">
-              {TABS.map(t => activeTab === t.id && (
-                <UserTable
-                  key={t.id}
-                  users={dataMap[t.id]}
-                  onToggleBlock={handleToggleBlock}
-                  onUpdate={handleUpdate}
-                  role={t.role}
-                />
-              ))}
+          {filtered.length === 0 && (
+            <div className="empty-state" style={{ padding: '40px' }}>
+              <p className="empty-state-title">No users found</p>
             </div>
           )}
         </div>
-      </main>
+      )}
+
+      {modal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <div className="modal-header">
+              <p className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FaIdCard style={{ color: '#C9662D' }} /> Review Identity
+              </p>
+              <button onClick={() => setModal(null)} className="modal-close"><FaTimes /></button>
+            </div>
+            <div style={{ background: '#FAF3E7', borderRadius: '10px', padding: '12px 14px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#C9662D,#A8511F)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, flexShrink: 0 }}>
+                {modal.user.name[0]?.toUpperCase()}
+              </div>
+              <div>
+                <p style={{ fontWeight: 600, margin: 0, fontSize: '14px' }}>{modal.user.name}</p>
+                <p style={{ fontSize: '12px', color: '#8A7B6C', margin: 0 }}>{modal.user.email}</p>
+              </div>
+            </div>
+
+            {(() => {
+              let docs = null;
+              try { docs = modal.user.verification_docs ? JSON.parse(modal.user.verification_docs) : null; } catch { docs = null; }
+              return docs?.idImage ? (
+                <a href={docs.idImage} target="_blank" rel="noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '8px', background: '#FBF0E8', color: '#A8511F', fontSize: '13px', fontWeight: 600, textDecoration: 'none', marginBottom: '16px' }}>
+                  <FaIdCard /> View submitted ID ({docs.idType || 'document'})
+                </a>
+              ) : (
+                <p style={{ fontSize: '13px', color: '#8A7B6C', marginBottom: '16px' }}>No document on file.</p>
+              );
+            })()}
+
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+              <button
+                onClick={() => setModal({ ...modal, action: 'approved' })}
+                style={{ flex: 1, padding: '8px', borderRadius: '8px', border: modal.action === 'approved' ? '2px solid #566B4A' : '1px solid #E8DCC8', background: modal.action === 'approved' ? '#E5EADF' : '#fff', color: '#566B4A', fontWeight: 600, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <FaCheckCircle /> Approve
+              </button>
+              <button
+                onClick={() => setModal({ ...modal, action: 'rejected' })}
+                style={{ flex: 1, padding: '8px', borderRadius: '8px', border: modal.action === 'rejected' ? '2px solid #C1442E' : '1px solid #E8DCC8', background: modal.action === 'rejected' ? '#FBE9E5' : '#fff', color: '#C1442E', fontWeight: 600, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <FaTimesCircle /> Reject
+              </button>
+            </div>
+
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#3D2B1F', marginBottom: '6px' }}>
+                Admin note {modal.action === 'rejected' ? '(reason for rejection)' : '(optional)'}
+              </label>
+              <textarea value={note} onChange={e => setNote(e.target.value)} rows={3}
+                className="input" placeholder={modal.action === 'rejected' ? 'Please provide a reason...' : 'Optional note...'} />
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={handleVerifyIdentity} disabled={submitting}
+                className="btn" style={{ flex: 1, background: '#C9662D', color: '#fff', border: 'none' }}>
+                {submitting ? 'Processing...' : `Confirm ${modal.action}`}
+              </button>
+              <button onClick={() => setModal(null)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
 
-export default Users;
+export default AdminUsers;

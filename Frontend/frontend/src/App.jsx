@@ -1,42 +1,15 @@
-// Frontend/src/App.jsx
+import { BrowserRouter } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/AuthContext.jsx';
+import AppRoutes from './routes/AppRoutes.jsx';
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-import Home           from "./pages/Home";
-import SignIn         from "./pages/SignIn";
-import Register       from "./pages/Register";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword  from "./pages/ResetPassword";
-import AddProperty    from "./pages/AddProperty";
-
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-
-        {/* Public */}
-        <Route path="/"                      element={<Home />} />
-        <Route path="/signin"                element={<SignIn />} />
-        <Route path="/register"              element={<Register />} />
-        <Route path="/forgot-password"       element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/add-property"          element={<AddProperty />} />
-
-        {/* Activation */}
-        <Route path="/activate/:token" element={
-          <div style={{ padding: 40, textAlign: "center", fontFamily: "Arial" }}>
-            Activating your account...
-          </div>
-        } />
-
-        {/* Dashboards */}
-        <Route path="/user/dashboard"     element={<div style={{ padding: 40 }}>User Dashboard — Coming Soon</div>} />
-        <Route path="/landlord/dashboard" element={<div style={{ padding: 40 }}>Landlord Dashboard — Coming Soon</div>} />
-        <Route path="/admin/dashboard"    element={<div style={{ padding: 40 }}>Admin Dashboard — Coming Soon</div>} />
-
-      </Routes>
-    </BrowserRouter>
-  );
-}
+const App = () => (
+  <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <AuthProvider>
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+      <AppRoutes />
+    </AuthProvider>
+  </BrowserRouter>
+);
 
 export default App;

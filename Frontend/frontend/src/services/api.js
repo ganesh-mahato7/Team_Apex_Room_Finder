@@ -1,32 +1,34 @@
-import axios from "axios";
-
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
+import axios from 'axios';
 
 const api = axios.create({
-  baseURL: API_URL,
-  headers: { "Content-Type": "application/json" },
+  baseURL: '/api',          // leading slash is critical
+  withCredentials: true,
 });
 
-// Interceptor to automatically attach JWT token from localStorage
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  const token = localStorage.getItem('accessToken');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
-}, (error) => {
-  return Promise.reject(error);
 });
 
-// Response interceptor for global error handling
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("token");
-      window.location.href = "/signin";
+  (res) => res,
+  async (err) => {
+    const original = err.config;
+    if (err.response?.status === 401 && !original._retry) {
+      original._retry = true;
+      try {
+        const res = await axios.post('/api/auth/refresh', {}, { withCredentials: true });
+        const newToken = res.data.data.accessToken;
+        localStorage.setItem('accessToken', newToken);
+        original.headers.Authorization = `Bearer ${newToken}`;
+        return api(original);
+      } catch {
+        localStorage.removeItem('accessToken');
+        window.location.href = '/login';
+      }
     }
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
 

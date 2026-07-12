@@ -1,84 +1,48 @@
-// Frontend/src/context/AuthContext.jsx
-// Global authentication state — wrap App with this
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { getMe, logout as logoutApi } from '../services/authService.js';
+import { connectSocket, disconnectSocket } from '../socket/socket.js';
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+const AuthContext = createContext(null);
 
-const AuthContext = createContext();
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-// ── Helper: get valid user from localStorage ──
-function getStoredUser() {
-  try {
-    const user = localStorage.getItem("user");
-    return user && user !== "null" ? JSON.parse(user) : null;
-  } catch {
-    return null;
-  }
-}
+  const loadUser = useCallback(async () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) { setLoading(false); return; }
+    try {
+      const res = await getMe();
+      setUser(res.data.data.user);
+      connectSocket(token);
+    } catch { localStorage.removeItem('accessToken'); }
+    finally { setLoading(false); }
+  }, []);
 
-function getStoredToken() {
-  const token = localStorage.getItem("token");
-  return token && token !== "null" ? token : null;
-}
+  useEffect(() => { loadUser(); }, [loadUser]);
 
-// ── Provider ──
-export function AuthProvider({ children }) {
-  const [user,  setUser]  = useState(getStoredUser);
-  const [token, setToken] = useState(getStoredToken);
-
-  // Sync to localStorage whenever user/token changes
-  useEffect(() => {
-    if (user)  localStorage.setItem("user",  JSON.stringify(user));
-    else       localStorage.removeItem("user");
-  }, [user]);
-
-  useEffect(() => {
-    if (token) localStorage.setItem("token", token);
-    else       localStorage.removeItem("token");
-  }, [token]);
-
-  // ── Login: save user and token ──
-  const login = (userData, authToken) => {
+  const login = (userData, token) => {
+    localStorage.setItem('accessToken', token);
     setUser(userData);
-    setToken(authToken);
-    localStorage.setItem("role",  userData.role);
-    localStorage.setItem("user",  JSON.stringify(userData));
-    localStorage.setItem("token", authToken);
+    connectSocket(token);
   };
 
-  // ── Logout: clear everything ──
-  const logout = () => {
+  const logout = async () => {
+    try { await logoutApi(); } catch {}
+    localStorage.removeItem('accessToken');
+    disconnectSocket();
     setUser(null);
-    setToken(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
   };
-
-  // ── Check if logged in ──
-  const isLoggedIn = !!user && !!token;
-
-  // ── Role checks ──
-  const isAdmin    = user?.role === "admin";
-  const isLandlord = user?.role === "landlord";
-  const isUser     = user?.role === "user";
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      token,
-      isLoggedIn,
-      isAdmin,
-      isLandlord,
-      isUser,
-      login,
-      logout,
-    }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-// ── Hook to use auth anywhere ──
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
+};
