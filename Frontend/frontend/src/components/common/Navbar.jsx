@@ -1,6 +1,7 @@
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { FaSearch, FaComments, FaBell, FaSignOutAlt, FaTachometerAlt } from 'react-icons/fa';
+import { FaSearch, FaComments, FaBell, FaSignOutAlt, FaTachometerAlt, FaUser, FaChevronDown } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import Logo from './Logo.jsx';
 
@@ -19,6 +20,18 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   const handleLogout = async () => {
     await logout();
@@ -27,6 +40,7 @@ const Navbar = () => {
   };
 
   const dashboardPath = { admin: '/admin/dashboard', landlord: '/landlord/dashboard', user: '/user/profile' };
+  const profilePath = { admin: '/admin/dashboard', landlord: '/user/profile', user: '/user/profile' };
 
   const linkStyle = (active) => ({
     display: 'flex',
@@ -89,69 +103,86 @@ const Navbar = () => {
               <Link
                 to="/notifications"
                 title="Notifications"
-                style={{
-                  ...linkStyle(isActive('/notifications')),
-                  padding: '8px',
-                  marginLeft: '2px',
-                }}
+                style={{ ...linkStyle(isActive('/notifications')), padding: '8px', marginLeft: '2px' }}
               >
                 <FaBell style={{ fontSize: '14px' }} />
               </Link>
 
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '6px 12px 6px 6px',
-                  marginLeft: '6px',
-                  borderRadius: '999px',
-                  background: COLORS.bg,
-                  border: `1px solid ${COLORS.border}`,
-                }}
-              >
-                <div
+              {/* Profile dropdown */}
+              <div ref={menuRef} style={{ position: 'relative', marginLeft: '6px' }}>
+                <button
+                  onClick={() => setMenuOpen(o => !o)}
                   style={{
-                    width: '26px',
-                    height: '26px',
-                    borderRadius: '50%',
-                    background: COLORS.primary,
-                    color: COLORS.white,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    flexShrink: 0,
+                    gap: '8px',
+                    padding: '6px 10px 6px 6px',
+                    borderRadius: '999px',
+                    background: menuOpen ? COLORS.bg : 'transparent',
+                    border: `1px solid ${menuOpen ? COLORS.border : 'transparent'}`,
+                    cursor: 'pointer',
+                    transition: 'background 0.15s',
                   }}
                 >
-                  {user.name?.[0]?.toUpperCase()}
-                </div>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: COLORS.text }}>{user.name}</span>
-              </div>
+                  <div
+                    style={{
+                      width: '26px',
+                      height: '26px',
+                      borderRadius: '50%',
+                      background: COLORS.primary,
+                      color: COLORS.white,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {user.name?.[0]?.toUpperCase()}
+                  </div>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: COLORS.text }}>{user.name}</span>
+                  <FaChevronDown style={{ fontSize: '9px', color: COLORS.muted, transform: menuOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
+                </button>
 
-              <button
-                onClick={handleLogout}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '7px 14px',
-                  marginLeft: '4px',
-                  borderRadius: '8px',
-                  border: `1px solid ${COLORS.border}`,
-                  background: COLORS.white,
-                  color: COLORS.muted,
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'border-color 0.15s, color 0.15s',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = COLORS.primary; e.currentTarget.style.color = COLORS.primary; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = COLORS.border; e.currentTarget.style.color = COLORS.muted; }}
-              >
-                <FaSignOutAlt style={{ fontSize: '12px' }} />Logout
-              </button>
+                {menuOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 8px)',
+                      right: 0,
+                      background: COLORS.white,
+                      border: `1px solid ${COLORS.border}`,
+                      borderRadius: '12px',
+                      boxShadow: '0 8px 24px rgba(61,43,31,0.12)',
+                      minWidth: '180px',
+                      overflow: 'hidden',
+                      zIndex: 50,
+                    }}
+                  >
+                    <div style={{ padding: '12px 14px', borderBottom: `1px solid ${COLORS.border}` }}>
+                      <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: COLORS.text }}>{user.name}</p>
+                      <p style={{ margin: '2px 0 0', fontSize: '12px', color: COLORS.muted, textTransform: 'capitalize' }}>{user.role}</p>
+                    </div>
+                    <Link
+                      to={profilePath[user.role] || '/user/profile'}
+                      style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', fontSize: '13px', fontWeight: 600, color: COLORS.text, textDecoration: 'none' }}
+                      onMouseEnter={e => e.currentTarget.style.background = COLORS.bg}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <FaUser style={{ fontSize: '12px', color: COLORS.primary }} />Profile
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', fontSize: '13px', fontWeight: 600, color: '#C1442E', background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
+                      onMouseEnter={e => e.currentTarget.style.background = COLORS.bg}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <FaSignOutAlt style={{ fontSize: '12px' }} />Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </>
           ) : (
             <>

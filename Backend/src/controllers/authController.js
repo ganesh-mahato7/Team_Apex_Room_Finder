@@ -73,3 +73,18 @@ export const resetPassword = async (req, res) => {
     return successResponse(res, 'Password reset successful. Please log in.');
   } catch (err) { return errorResponse(res, err.message); }
 };
+
+// ── CHANGE PASSWORD (logged-in user, from profile) ─────────────
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return errorResponse(res, 'Current password and new password are required');
+    }
+    if (newPassword.length < 8) {
+      return errorResponse(res, 'New password must be at least 8 characters');
+    }
+    await authService.changePassword(req.user.id, currentPassword, newPassword);
+    return successResponse(res, 'Password changed successfully. Please log in again on other devices.');
+  } catch (err) { return errorResponse(res, err.message); }
+};

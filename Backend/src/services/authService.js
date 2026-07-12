@@ -194,3 +194,30 @@ export const resetPassword = async (rawToken, newPassword) => {
 
   await sendPasswordChangedEmail(rec.email, rec.name);
 };
+
+// ── CHANGE PASSWORD (logged-in user, from profile) ─────────────
+export const changePassword = async (userId, currentPassword, newPassword) => {
+  const result = await query('SELECT id, name, email, password FROM users WHERE id = $1', [userId]);
+  if (result.rows.length === 0) throw new Error('User not found');
+
+  const user = result.rows[0];
+
+  const match = await comparePassword(currentPassword, user.password);
+  if (!match) throw new Error('Current password is incorrect');
+
+  if (currentPassword === newPassword) {
+    throw new Error('New password must be different from your current password');
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+  await query('UPDATE users SET password=$1, updated_at=NOW() WHERE id=$2', [hashedPassword, userId]);
+
+  // Invalidate all existing sessions so other devices must re-login with the new password
+  await query('DELETE FROM refresh_tokens WHERE user_id=$1', [userId]);
+
+  try {
+    await sendPasswordChangedEmail(user.email, user.name);
+  } catch (err) {
+    console.error('⚠️  Password-changed email failed:', err.message);
+  }
+};

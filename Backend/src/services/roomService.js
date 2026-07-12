@@ -65,18 +65,35 @@ export const getLandlordRooms = async (landlordId) => {
   return result.rows;
 };
 
-export const updateRoom = async (id, landlordId, body) => {
+export const updateRoom = async (id, landlordId, body, imageUrls = []) => {
   const { title, description, price, location, address, room_type, amenities, rules, is_available } = body;
+
+  // Fetch the room's current images first so newly uploaded files get
+  // combined with (not replacing) the existing ones. `images` is JSONB,
+  // so pg already hands it back as a real JS array (no JSON.parse needed).
+  const current = await query(
+    'SELECT images FROM rooms WHERE id=$1 AND landlord_id=$2',
+    [id, landlordId]
+  );
+  if (current.rows.length === 0) throw new Error('Room not found or not authorized');
+
+  const existingImages = current.rows[0].images || [];
+  // ⚠️ FIX: new uploads now go FIRST, not last. RoomDetails.jsx defaults
+  // imgIndex to 0 and shows images[0] as the main photo — previously new
+  // uploads were appended to the END of the array, so they landed in
+  // Cloudinary and in the DB correctly, but never became the visible main
+  // photo unless someone manually clicked through the thumbnail strip.
+  const finalImages = imageUrls.length > 0 ? [...imageUrls, ...existingImages] : existingImages;
 
   const result = await query(
     `UPDATE rooms SET
        title=$1, description=$2, price=$3, location=$4, address=$5,
-       room_type=$6, amenities=$7, rules=$8, is_available=$9, updated_at=NOW()
-     WHERE id=$10 AND landlord_id=$11
+       room_type=$6, amenities=$7, rules=$8, is_available=$9, images=$10, updated_at=NOW()
+     WHERE id=$11 AND landlord_id=$12
      RETURNING *`,
     [title, description, price, location, address, room_type,
       JSON.stringify(amenities || []), JSON.stringify(rules || []),
-      is_available ?? true, id, landlordId]
+      is_available ?? true, JSON.stringify(finalImages), id, landlordId]
   );
   if (result.rows.length === 0) throw new Error('Room not found or not authorized');
   return result.rows[0];

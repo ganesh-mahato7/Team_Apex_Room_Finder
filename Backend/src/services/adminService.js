@@ -13,7 +13,7 @@ export const getPendingLandlords = async () => {
 
 export const getAllLandlords = async () => {
   const result = await query(
-    `SELECT id, name, email, phone, is_verified, verification_status, is_banned, created_at
+    `SELECT id, name, email, phone, is_verified, verification_status, verification_docs, is_banned, created_at
      FROM users WHERE role='landlord' ORDER BY created_at DESC`
   );
   return result.rows;
@@ -158,7 +158,7 @@ export const resolveReport = async (reportId, action, adminNote) => {
 // --- Users ---
 export const getAllUsers = async () => {
   const result = await query(
-    `SELECT id, name, email, role, is_banned, verification_status, created_at FROM users
+    `SELECT id, name, email, role, is_banned, verification_status, verification_docs, created_at FROM users
      WHERE role != 'admin' ORDER BY created_at DESC`
   );
   return result.rows;

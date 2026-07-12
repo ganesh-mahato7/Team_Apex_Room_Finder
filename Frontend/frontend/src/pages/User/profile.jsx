@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FaUser, FaEnvelope, FaPhone, FaIdCard, FaCamera, FaFileAlt, FaBuilding,
+import { FaUser, FaEnvelope, FaPhone, FaIdCard, FaCamera, FaFileAlt, FaBuilding, FaLock, FaEye, FaEyeSlash,
          FaCheckCircle, FaClock, FaTimesCircle, FaShieldAlt } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext.jsx';
 import api from '../../services/api.js';
@@ -10,6 +10,10 @@ const Profile = () => {
   const { user, setUser } = useAuth();
   const [form, setForm] = useState({ name: user?.name || '', phone: user?.phone || '' });
   const [saving, setSaving] = useState(false);
+
+  const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [changingPw, setChangingPw] = useState(false);
+  const [showPw, setShowPw] = useState({ current: false, next: false, confirm: false });
 
   const [landlordDocs, setLandlordDocs] = useState({
     idType: 'citizenship', idImage: null, selfie: null,
@@ -40,6 +44,29 @@ const Profile = () => {
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update');
     } finally { setSaving(false); }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (pwForm.newPassword !== pwForm.confirmPassword) {
+      return toast.error("New passwords don't match");
+    }
+    if (pwForm.newPassword.length < 8) {
+      return toast.error('New password must be at least 8 characters');
+    }
+    setChangingPw(true);
+    try {
+      // ⚠️ adjust '/auth/change-password' if your auth routes are mounted under a different prefix
+      await api.post('/auth/change-password', {
+        currentPassword: pwForm.currentPassword,
+        newPassword: pwForm.newPassword,
+      });
+      toast.success('Password changed. Please log in again on other devices.');
+      setPwForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setShowPw({ current: false, next: false, confirm: false });
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to change password');
+    } finally { setChangingPw(false); }
   };
 
   const handleLandlordVerify = async (e) => {
@@ -111,6 +138,39 @@ const Profile = () => {
     </div>
   );
 
+  // Password input with an eye toggle button to show/hide the value
+  const PasswordInput = ({ label, value, onChange, visible, onToggle }) => (
+    <div>
+      <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#3D2B1F', marginBottom: '4px' }}>
+        {label}
+      </label>
+      <div style={{ position: 'relative' }}>
+        <input
+          type={visible ? 'text' : 'password'}
+          value={value}
+          onChange={onChange}
+          className="input"
+          required
+          minLength={8}
+          style={{ paddingRight: '40px' }}
+        />
+        <button
+          type="button"
+          onClick={onToggle}
+          tabIndex={-1}
+          aria-label={visible ? 'Hide password' : 'Show password'}
+          style={{
+            position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+            background: 'none', border: 'none', cursor: 'pointer', color: '#8A7B6C',
+            display: 'flex', alignItems: 'center', padding: 0,
+          }}
+        >
+          {visible ? <FaEyeSlash /> : <FaEye />}
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div style={{ maxWidth: '672px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#3D2B1F', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -147,6 +207,39 @@ const Profile = () => {
           </div>
           <button type="submit" disabled={saving} className="btn btn-primary" style={{ alignSelf: 'flex-start' }}>
             {saving ? 'Saving...' : 'Save Changes'}
+          </button>
+        </form>
+      </div>
+
+      {/* CHANGE PASSWORD */}
+      <div className="card">
+        <h2 style={{ fontWeight: 600, color: '#3D2B1F', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <FaLock style={{ color: '#C9662D' }} /> Change Password
+        </h2>
+        <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <PasswordInput
+            label="Current Password"
+            value={pwForm.currentPassword}
+            onChange={e => setPwForm({ ...pwForm, currentPassword: e.target.value })}
+            visible={showPw.current}
+            onToggle={() => setShowPw({ ...showPw, current: !showPw.current })}
+          />
+          <PasswordInput
+            label="New Password"
+            value={pwForm.newPassword}
+            onChange={e => setPwForm({ ...pwForm, newPassword: e.target.value })}
+            visible={showPw.next}
+            onToggle={() => setShowPw({ ...showPw, next: !showPw.next })}
+          />
+          <PasswordInput
+            label="Confirm New Password"
+            value={pwForm.confirmPassword}
+            onChange={e => setPwForm({ ...pwForm, confirmPassword: e.target.value })}
+            visible={showPw.confirm}
+            onToggle={() => setShowPw({ ...showPw, confirm: !showPw.confirm })}
+          />
+          <button type="submit" disabled={changingPw} className="btn btn-primary" style={{ alignSelf: 'flex-start' }}>
+            {changingPw ? 'Changing...' : 'Change Password'}
           </button>
         </form>
       </div>

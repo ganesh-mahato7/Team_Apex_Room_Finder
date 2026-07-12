@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { FaUserShield, FaCheckCircle, FaTimesCircle, FaIdCard, FaCamera, FaFileAlt, FaBuilding, FaTimes } from 'react-icons/fa';
 import api from '../../services/api.js';
 import toast from 'react-hot-toast';
-import { STATUS_COLORS } from '../../utils/constants.js';
 import { formatDate } from '../../utils/helpers.js';
 import Loader from '../../components/common/Loader.jsx';
+
+const COLORS = { primary: '#C9662D', text: '#3D2B1F', muted: '#8A7B6C', border: '#E8DCC8', bg: '#FAF3E7', white: '#FFFFFF' };
 
 const AdminLandlords = () => {
   const [landlords, setLandlords] = useState([]);
@@ -13,6 +14,7 @@ const AdminLandlords = () => {
   const [modal, setModal] = useState(null);
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [lightbox, setLightbox] = useState(null);
 
   const fetchLandlords = () => {
     setLoading(true);
@@ -37,20 +39,31 @@ const AdminLandlords = () => {
     } finally { setSubmitting(false); }
   };
 
+  const openReview = (landlord) => {
+    let docs = null;
+    try { docs = landlord.verification_docs ? JSON.parse(landlord.verification_docs) : null; } catch { docs = null; }
+    setModal({ landlord, action: 'approved', docs });
+    setNote('');
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--gray-900)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <FaUserShield style={{ color: '#d97706' }} /> Landlords
+          <h1 style={{ fontSize: '24px', fontWeight: 800, color: COLORS.text, margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <FaUserShield style={{ color: COLORS.primary }} /> Landlords
           </h1>
-          <p style={{ fontSize: '13px', color: 'var(--gray-500)', margin: '4px 0 0' }}>Review and approve landlord verification requests</p>
+          <p style={{ fontSize: '13px', color: COLORS.muted, margin: '4px 0 0' }}>Review and approve landlord verification requests</p>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
           {['all', 'pending'].map(f => (
             <button key={f} onClick={() => setFilter(f)}
-              className={`btn btn-sm ${filter === f ? 'btn-primary' : 'btn-ghost'}`}
-              style={{ textTransform: 'capitalize' }}>
+              style={{
+                padding: '7px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, textTransform: 'capitalize', cursor: 'pointer',
+                border: filter === f ? 'none' : `1px solid ${COLORS.border}`,
+                background: filter === f ? COLORS.primary : COLORS.white,
+                color: filter === f ? COLORS.white : COLORS.muted,
+              }}>
               {f}
             </button>
           ))}
@@ -67,19 +80,24 @@ const AdminLandlords = () => {
             </thead>
             <tbody>
               {landlords.map(l => {
-                const docs = l.verification_docs ? JSON.parse(l.verification_docs) : null;
-                const statusColors = { approved: { bg: '#dcfce7', color: '#15803d' }, pending: { bg: '#fef9c3', color: '#854d0e' }, rejected: { bg: '#fee2e2', color: '#b91c1c' }, none: { bg: 'var(--gray-100)', color: 'var(--gray-500)' } }[l.verification_status] || {};
+                const hasDocs = !!l.verification_docs;
+                const statusColors = {
+                  approved: { bg: '#E5EADF', color: '#566B4A' },
+                  pending:  { bg: '#FEF3D9', color: '#B45309' },
+                  rejected: { bg: '#FBE9E5', color: '#C1442E' },
+                  none:     { bg: '#F3E9D8', color: '#8A7B6C' },
+                }[l.verification_status] || {};
                 return (
                   <tr key={l.id}>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#d97706,#b45309)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '14px', flexShrink: 0 }}>
+                        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#C9662D,#A8511F)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '14px', flexShrink: 0 }}>
                           {l.name[0]?.toUpperCase()}
                         </div>
                         <div>
-                          <p style={{ fontWeight: 600, color: 'var(--gray-900)', margin: 0, fontSize: '14px' }}>{l.name}</p>
-                          <p style={{ fontSize: '12px', color: 'var(--gray-500)', margin: 0 }}>{l.email}</p>
-                          {l.phone && <p style={{ fontSize: '11px', color: 'var(--gray-400)', margin: 0 }}>{l.phone}</p>}
+                          <p style={{ fontWeight: 600, color: COLORS.text, margin: 0, fontSize: '14px' }}>{l.name}</p>
+                          <p style={{ fontSize: '12px', color: COLORS.muted, margin: 0 }}>{l.email}</p>
+                          {l.phone && <p style={{ fontSize: '11px', color: COLORS.muted, margin: 0 }}>{l.phone}</p>}
                         </div>
                       </div>
                     </td>
@@ -89,30 +107,19 @@ const AdminLandlords = () => {
                       </span>
                     </td>
                     <td>
-                      {docs ? (
-                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                          {[{ url: docs.idImage, icon: <FaIdCard />, label: 'ID' }, { url: docs.selfie, icon: <FaCamera />, label: 'Selfie' }, { url: docs.landDocument, icon: <FaFileAlt />, label: 'Land Doc' }, { url: docs.buildingImage, icon: <FaBuilding />, label: 'Building' }].filter(d => d.url).map(d => (
-                            <a key={d.label} href={d.url} target="_blank" rel="noreferrer"
-                              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: '6px', background: 'var(--primary-light)', color: 'var(--primary)', fontSize: '11px', fontWeight: 600, textDecoration: 'none' }}>
-                              {d.icon}{d.label}
-                            </a>
-                          ))}
-                        </div>
-                      ) : <span style={{ color: 'var(--gray-400)', fontSize: '13px' }}>No docs</span>}
+                      {hasDocs ? (
+                        <button
+                          onClick={() => openReview(l)}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '5px 12px', borderRadius: '8px', border: 'none', background: '#FBF0E8', color: '#A8511F', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          <FaIdCard style={{ fontSize: '11px' }} />Review documents
+                        </button>
+                      ) : <span style={{ color: COLORS.muted, fontSize: '13px' }}>No docs</span>}
                     </td>
-                    <td style={{ fontSize: '13px', color: 'var(--gray-500)' }}>{formatDate(l.created_at)}</td>
+                    <td style={{ fontSize: '13px', color: COLORS.muted }}>{formatDate(l.created_at)}</td>
                     <td>
-                      {l.verification_status === 'pending' && (
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          <button onClick={() => setModal({ landlord: l, action: 'approved' })}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '5px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600, background: '#dcfce7', color: '#15803d' }}>
-                            <FaCheckCircle style={{ fontSize: '11px' }} />Approve
-                          </button>
-                          <button onClick={() => setModal({ landlord: l, action: 'rejected' })}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '5px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600, background: '#fee2e2', color: '#b91c1c' }}>
-                            <FaTimesCircle style={{ fontSize: '11px' }} />Reject
-                          </button>
-                        </div>
+                      {l.verification_status === 'pending' && !hasDocs && (
+                        <span style={{ fontSize: '12px', color: COLORS.muted }}>Awaiting docs</span>
                       )}
                     </td>
                   </tr>
@@ -129,27 +136,67 @@ const AdminLandlords = () => {
         </div>
       )}
 
+      {/* Review modal with inline document previews */}
       {modal && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <div className="modal-header">
-              <p className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {modal.action === 'approved' ? <FaCheckCircle style={{ color: '#15803d' }} /> : <FaTimesCircle style={{ color: 'var(--danger)' }} />}
-                {modal.action === 'approved' ? 'Approve' : 'Reject'} Landlord
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(61,43,31,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '16px' }}>
+          <div style={{ background: COLORS.white, borderRadius: '18px', padding: '28px', width: '100%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+              <p style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: COLORS.text, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FaUserShield style={{ color: COLORS.primary }} /> Review Landlord Documents
               </p>
-              <button onClick={() => setModal(null)} className="modal-close"><FaTimes /></button>
+              <button onClick={() => setModal(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.muted, fontSize: '16px' }}><FaTimes /></button>
             </div>
-            <div style={{ background: 'var(--gray-50)', borderRadius: '10px', padding: '12px 14px', marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#d97706,#b45309)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, flexShrink: 0 }}>
+
+            <div style={{ background: COLORS.bg, borderRadius: '10px', padding: '12px 14px', marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#C9662D,#A8511F)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, flexShrink: 0 }}>
                 {modal.landlord.name[0]?.toUpperCase()}
               </div>
               <div>
-                <p style={{ fontWeight: 600, margin: 0, fontSize: '14px' }}>{modal.landlord.name}</p>
-                <p style={{ fontSize: '12px', color: 'var(--gray-500)', margin: 0 }}>{modal.landlord.email}</p>
+                <p style={{ fontWeight: 600, margin: 0, fontSize: '14px', color: COLORS.text }}>{modal.landlord.name}</p>
+                <p style={{ fontSize: '12px', color: COLORS.muted, margin: 0 }}>{modal.landlord.email}</p>
               </div>
             </div>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--gray-700)', marginBottom: '6px' }}>
+
+            {modal.docs ? (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
+                {[
+                  { url: modal.docs.idImage, icon: <FaIdCard />, label: `ID (${modal.docs.idType || 'document'})` },
+                  { url: modal.docs.selfie, icon: <FaCamera />, label: 'Selfie with ID' },
+                  { url: modal.docs.landDocument, icon: <FaFileAlt />, label: 'Land Document' },
+                  { url: modal.docs.buildingImage, icon: <FaBuilding />, label: 'Building Image' },
+                ].filter(d => d.url).map(d => (
+                  <div key={d.label} style={{ border: `1px solid ${COLORS.border}`, borderRadius: '10px', overflow: 'hidden' }}>
+                    <img
+                      src={d.url}
+                      alt={d.label}
+                      onClick={() => setLightbox(d.url)}
+                      style={{ width: '100%', height: '120px', objectFit: 'cover', cursor: 'pointer', display: 'block' }}
+                    />
+                    <p style={{ fontSize: '11px', fontWeight: 700, color: COLORS.text, padding: '6px 10px', margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      {d.icon} {d.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ fontSize: '13px', color: COLORS.muted, marginBottom: '20px' }}>No documents on file.</p>
+            )}
+
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+              <button
+                onClick={() => setModal({ ...modal, action: 'approved' })}
+                style={{ flex: 1, padding: '9px', borderRadius: '8px', border: modal.action === 'approved' ? '2px solid #566B4A' : `1px solid ${COLORS.border}`, background: modal.action === 'approved' ? '#E5EADF' : COLORS.white, color: '#566B4A', fontWeight: 700, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <FaCheckCircle /> Approve
+              </button>
+              <button
+                onClick={() => setModal({ ...modal, action: 'rejected' })}
+                style={{ flex: 1, padding: '9px', borderRadius: '8px', border: modal.action === 'rejected' ? '2px solid #C1442E' : `1px solid ${COLORS.border}`, background: modal.action === 'rejected' ? '#FBE9E5' : COLORS.white, color: '#C1442E', fontWeight: 700, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <FaTimesCircle /> Reject
+              </button>
+            </div>
+
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: COLORS.text, marginBottom: '6px' }}>
                 Admin note {modal.action === 'rejected' ? '(reason for rejection)' : '(optional)'}
               </label>
               <textarea value={note} onChange={e => setNote(e.target.value)} rows={3}
@@ -157,12 +204,24 @@ const AdminLandlords = () => {
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
               <button onClick={handleVerify} disabled={submitting}
-                className={`btn ${modal.action === 'approved' ? 'btn-primary' : 'btn-danger'}`} style={{ flex: 1 }}>
+                style={{ flex: 1, padding: '11px', borderRadius: '8px', border: 'none', background: COLORS.primary, color: COLORS.white, fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}>
                 {submitting ? 'Processing...' : `Confirm ${modal.action}`}
               </button>
-              <button onClick={() => setModal(null)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
+              <button onClick={() => setModal(null)} style={{ flex: 1, padding: '11px', borderRadius: '8px', border: `1px solid ${COLORS.border}`, background: COLORS.white, color: COLORS.muted, fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
+                Cancel
+              </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Fullscreen image lightbox */}
+      {lightbox && (
+        <div
+          onClick={() => setLightbox(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100, padding: '24px', cursor: 'zoom-out' }}
+        >
+          <img src={lightbox} alt="Document" style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: '8px' }} />
         </div>
       )}
     </div>

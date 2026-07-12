@@ -22,7 +22,9 @@ router.post('/:id/favorite', authenticate, requireRole('user'), roomController.t
 
 // Landlord
 router.post('/',    authenticate, requireVerifiedLandlord, uploadLimiter, uploadRoomImages, roomController.createRoom);
-router.put('/:id',  authenticate, requireVerifiedLandlord, roomController.updateRoom);
+// ⚠️ FIX: was missing uploadLimiter + uploadRoomImages — new images sent via multipart/form-data
+// on edit were silently dropped because multer never parsed req.files here.
+router.put('/:id',  authenticate, requireVerifiedLandlord, uploadLimiter, uploadRoomImages, roomController.updateRoom);
 router.delete('/:id', authenticate, requireRole('landlord', 'admin'), roomController.deleteRoom);
 
 export default router;

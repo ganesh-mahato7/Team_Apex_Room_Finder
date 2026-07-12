@@ -55,7 +55,22 @@ export const updateRoom = async (req, res) => {
     const existing = await query('SELECT landlord_id FROM rooms WHERE id = $1', [req.params.id]);
     if (existing.rows.length === 0) return errorResponse(res, 'Room not found', 404);
     if (existing.rows[0].landlord_id !== req.user.id) return errorResponse(res, 'Not authorized', 403);
-    const room = await roomService.updateRoom(req.params.id, req.user.id, req.body);
+
+    // ⚠️ FIX: this previously never looked at req.files at all, so newly
+    // uploaded images had nowhere to go even once they reached the server.
+    // Same upload pattern as createRoom above.
+    const imageUrls = [];
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const url = await uploadToCloudinary(file.buffer, 'room-finder/rooms', {
+          allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+          transformation: [{ width: 1200, height: 800, crop: 'limit', quality: 'auto' }],
+        });
+        imageUrls.push(url);
+      }
+    }
+
+    const room = await roomService.updateRoom(req.params.id, req.user.id, req.body, imageUrls);
     return successResponse(res, 'Room updated', { room });
   } catch (err) {
     return errorResponse(res, err.message);

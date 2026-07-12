@@ -23,9 +23,13 @@ const EditRoom = () => {
   const handleSubmit = async (formData) => {
     setLoading(true);
     try {
-      const body = {};
-      for (let [k, v] of formData.entries()) body[k] = v;
-      await updateRoom(id, body);
+      // ⚠️ FIX: previously this flattened formData into a plain object,
+      // which silently dropped any attached File (a File inside a plain
+      // JS object doesn't survive JSON.stringify, which is what axios
+      // does for non-FormData bodies). Pass the FormData straight through
+      // so axios sends it as multipart/form-data and the backend's
+      // multer middleware (uploadRoomImages) can actually see req.files.
+      await updateRoom(id, formData);
       toast.success('Room updated successfully');
       navigate('/landlord/my-rooms');
     } catch (err) {

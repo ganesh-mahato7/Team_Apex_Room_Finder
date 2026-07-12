@@ -12,6 +12,7 @@ const AdminUsers = () => {
   const [modal, setModal] = useState(null);
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [lightbox, setLightbox] = useState(null);
 
   const fetchUsers = () => {
     setLoading(true);
@@ -171,10 +172,17 @@ const AdminUsers = () => {
               let docs = null;
               try { docs = modal.user.verification_docs ? JSON.parse(modal.user.verification_docs) : null; } catch { docs = null; }
               return docs?.idImage ? (
-                <a href={docs.idImage} target="_blank" rel="noreferrer"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '8px', background: '#FBF0E8', color: '#A8511F', fontSize: '13px', fontWeight: 600, textDecoration: 'none', marginBottom: '16px' }}>
-                  <FaIdCard /> View submitted ID ({docs.idType || 'document'})
-                </a>
+                <div style={{ border: '1px solid #E8DCC8', borderRadius: '10px', overflow: 'hidden', marginBottom: '16px' }}>
+                  <img
+                    src={docs.idImage}
+                    alt="Submitted ID"
+                    onClick={() => setLightbox(docs.idImage)}
+                    style={{ width: '100%', height: '200px', objectFit: 'cover', cursor: 'zoom-in', display: 'block' }}
+                  />
+                  <p style={{ fontSize: '11px', fontWeight: 700, color: '#3D2B1F', padding: '8px 10px', margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <FaIdCard /> {docs.idType || 'ID document'} · click to enlarge
+                  </p>
+                </div>
               ) : (
                 <p style={{ fontSize: '13px', color: '#8A7B6C', marginBottom: '16px' }}>No document on file.</p>
               );
@@ -208,6 +216,15 @@ const AdminUsers = () => {
               <button onClick={() => setModal(null)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {lightbox && (
+        <div
+          onClick={() => setLightbox(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100, padding: '24px', cursor: 'zoom-out' }}
+        >
+          <img src={lightbox} alt="Document" style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: '8px' }} />
         </div>
       )}
     </div>
