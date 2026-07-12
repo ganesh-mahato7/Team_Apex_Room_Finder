@@ -8,6 +8,7 @@ import Footer from '../../components/common/Footer.jsx';
 import Loader from '../../components/common/Loader.jsx';
 import { formatPrice, formatDate } from '../../utils/helpers.js';
 import toast from 'react-hot-toast';
+import BookingRequestButton from '../../components/room/BookingRequestButton.jsx';
 
 const RoomDetails = () => {
   const { id } = useParams();
@@ -62,20 +63,25 @@ const RoomDetails = () => {
   const rules = typeof room.rules === 'string' ? JSON.parse(room.rules) : room.rules || [];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg, #FAF3E7)' }}>
       <Navbar />
       <div className="max-w-5xl mx-auto px-4 py-8 w-full">
 
         {/* Images */}
-        <div className="rounded-xl overflow-hidden bg-gray-100 mb-6">
+        <div className="rounded-xl overflow-hidden mb-6" style={{ background: 'var(--white, #fff)', border: '1px solid var(--border, #E8DCC8)' }}>
           {images.length > 0 ? (
             <>
               <img src={images[imgIndex]} alt={room.title} className="w-full h-96 object-cover" />
               {images.length > 1 && (
                 <div className="flex gap-2 p-3 overflow-x-auto">
                   {images.map((img, i) => (
-                    <img key={i} src={img} onClick={() => setImgIndex(i)}
-                      className={`h-16 w-24 object-cover rounded-lg cursor-pointer border-2 transition ${i === imgIndex ? 'border-blue-600' : 'border-transparent'}`} />
+                    <img
+                      key={i}
+                      src={img}
+                      onClick={() => setImgIndex(i)}
+                      className="h-16 w-24 object-cover rounded-lg cursor-pointer transition"
+                      style={{ border: `2px solid ${i === imgIndex ? 'var(--primary, #C9662D)' : 'transparent'}` }}
+                    />
                   ))}
                 </div>
               )}
@@ -90,24 +96,29 @@ const RoomDetails = () => {
           <div className="lg:col-span-2 space-y-5">
             <div>
               <div className="flex items-start justify-between gap-4">
-                <h1 className="text-2xl font-bold text-gray-900">{room.title}</h1>
-                <span className="badge bg-blue-100 text-blue-800 shrink-0 capitalize">{room.room_type}</span>
+                <h1 className="text-2xl font-bold" style={{ color: 'var(--text, #3D2B1F)' }}>{room.title}</h1>
+                <span
+                  className="shrink-0 capitalize"
+                  style={{ background: '#FBF0E8', color: '#A8511F', padding: '3px 12px', borderRadius: '9999px', fontSize: '12px', fontWeight: 700 }}
+                >
+                  {room.room_type}
+                </span>
               </div>
-              <p className="text-gray-500 mt-1">📍 {room.address}</p>
-              <p className="text-sm text-gray-400 mt-1">Listed {formatDate(room.created_at)}</p>
+              <p className="mt-1" style={{ color: 'var(--muted, #8A7B6C)' }}>📍 {room.address}</p>
+              <p className="text-sm mt-1" style={{ color: 'var(--muted, #8A7B6C)' }}>Listed {formatDate(room.created_at)}</p>
             </div>
 
             <div className="card">
-              <h2 className="font-semibold text-gray-800 mb-2">Description</h2>
-              <p className="text-gray-600 leading-relaxed">{room.description}</p>
+              <h2 className="font-semibold mb-2" style={{ color: 'var(--text, #3D2B1F)' }}>Description</h2>
+              <p className="leading-relaxed" style={{ color: 'var(--muted, #8A7B6C)' }}>{room.description}</p>
             </div>
 
             {amenities.length > 0 && (
               <div className="card">
-                <h2 className="font-semibold text-gray-800 mb-3">Amenities</h2>
+                <h2 className="font-semibold mb-3" style={{ color: 'var(--text, #3D2B1F)' }}>Amenities</h2>
                 <div className="flex flex-wrap gap-2">
                   {amenities.map((a, i) => (
-                    <span key={i} className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm">✓ {a}</span>
+                    <span key={i} className="px-3 py-1 rounded-full text-sm" style={{ background: '#E5EADF', color: '#566B4A' }}>✓ {a}</span>
                   ))}
                 </div>
               </div>
@@ -115,10 +126,10 @@ const RoomDetails = () => {
 
             {rules.length > 0 && (
               <div className="card">
-                <h2 className="font-semibold text-gray-800 mb-3">House Rules</h2>
+                <h2 className="font-semibold mb-3" style={{ color: 'var(--text, #3D2B1F)' }}>House Rules</h2>
                 <ul className="space-y-1">
                   {rules.map((r, i) => (
-                    <li key={i} className="text-gray-600 text-sm flex gap-2"><span>•</span>{r}</li>
+                    <li key={i} className="text-sm flex gap-2" style={{ color: 'var(--muted, #8A7B6C)' }}><span>•</span>{r}</li>
                   ))}
                 </ul>
               </div>
@@ -128,16 +139,18 @@ const RoomDetails = () => {
           {/* Sidebar */}
           <div className="space-y-4">
             <div className="card">
-              <p className="text-3xl font-bold text-blue-600">
-                {formatPrice(room.price)}<span className="text-base font-normal text-gray-500">/mo</span>
+              <p className="text-3xl font-bold" style={{ color: 'var(--primary, #C9662D)' }}>
+                {formatPrice(room.price)}<span className="text-base font-normal" style={{ color: 'var(--muted, #8A7B6C)' }}>/mo</span>
               </p>
-              <p className="text-sm mt-2 text-gray-500">
-                Landlord: <span className="font-medium text-gray-800">{room.landlord_name}</span>
+              <p className="text-sm mt-2" style={{ color: 'var(--muted, #8A7B6C)' }}>
+                Landlord: <span className="font-medium" style={{ color: 'var(--text, #3D2B1F)' }}>{room.landlord_name}</span>
               </p>
-              {room.landlord_phone && <p className="text-sm text-gray-500">📞 {room.landlord_phone}</p>}
+              {room.landlord_phone && <p className="text-sm" style={{ color: 'var(--muted, #8A7B6C)' }}>📞 {room.landlord_phone}</p>}
+
               <div className="mt-4 space-y-2">
                 {user?.role === 'user' && (
                   <>
+                    <BookingRequestButton roomId={room.id} />
                     <button onClick={handleChat} className="btn btn-primary btn-full">💬 Chat with Landlord</button>
                     <button onClick={handleFavorite} className="btn btn-secondary btn-full">♡ Save to Favorites</button>
                   </>
@@ -150,8 +163,8 @@ const RoomDetails = () => {
 
             {user && (
               <div className="card">
-                <p className="text-sm font-medium text-gray-700 mb-2">Something wrong with this listing?</p>
-                <button onClick={() => setReportModal(true)} className="text-sm text-red-500 hover:underline">
+                <p className="text-sm font-medium mb-2" style={{ color: 'var(--text, #3D2B1F)' }}>Something wrong with this listing?</p>
+                <button onClick={() => setReportModal(true)} className="text-sm hover:underline" style={{ color: '#C1442E', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                   🚩 Report this room
                 </button>
               </div>
@@ -162,9 +175,9 @@ const RoomDetails = () => {
 
       {/* Report modal */}
       {reportModal && (
-        <div className="fixed inset-0 bg-black\/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md">
-            <h3 className="font-semibold text-gray-900 mb-3">Report this Room</h3>
+        <div className="fixed inset-0 flex items-center justify-center z-50 px-4" style={{ background: 'rgba(61,43,31,0.5)' }}>
+          <div className="rounded-xl p-6 w-full max-w-md" style={{ background: 'var(--white, #fff)' }}>
+            <h3 className="font-semibold mb-3" style={{ color: 'var(--text, #3D2B1F)' }}>Report this Room</h3>
             <textarea value={reportReason} onChange={e => setReportReason(e.target.value)}
               rows={4} className="input mb-4" placeholder="Describe the issue..." />
             <div className="flex gap-2">

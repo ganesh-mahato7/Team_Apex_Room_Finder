@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { FaUser, FaHeart, FaComments } from 'react-icons/fa';
+import { FaUser, FaHeart, FaClipboardList } from 'react-icons/fa';
 import Navbar from '../components/common/Navbar.jsx';
 import Footer from '../components/common/Footer.jsx';
 
@@ -15,7 +15,7 @@ const COLORS = {
 const links = [
   { to: '/user/profile', label: 'Profile', icon: <FaUser /> },
   { to: '/user/favorites', label: 'Favorites', icon: <FaHeart /> },
-  { to: '/chats', label: 'My Chats', icon: <FaComments /> },
+  { to: '/user/requests', label: 'My Requests', icon: <FaClipboardList /> },
 ];
 
 const UserLayout = () => {

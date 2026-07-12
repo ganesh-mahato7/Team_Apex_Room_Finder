@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { FaTachometerAlt, FaHome, FaPlusCircle, FaComments, FaUser } from 'react-icons/fa';
+import { FaTachometerAlt, FaHome, FaPlusCircle, FaUser, FaClipboardList } from 'react-icons/fa';
 import Navbar from '../components/common/Navbar.jsx';
 import Footer from '../components/common/Footer.jsx';
 
@@ -16,7 +16,7 @@ const links = [
   { to: '/landlord/dashboard', label: 'Dashboard', icon: <FaTachometerAlt /> },
   { to: '/landlord/my-rooms', label: 'My Rooms', icon: <FaHome /> },
   { to: '/landlord/add-room', label: 'Add Room', icon: <FaPlusCircle /> },
-  { to: '/chats', label: 'Chats', icon: <FaComments /> },
+  { to: '/landlord/requests', label: 'Requests', icon: <FaClipboardList /> },
   { to: '/user/profile', label: 'Profile', icon: <FaUser /> },
 ];
 

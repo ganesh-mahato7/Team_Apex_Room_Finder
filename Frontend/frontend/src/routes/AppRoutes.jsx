@@ -16,12 +16,14 @@ import Home        from '../pages/user/Home.jsx';
 import RoomDetails from '../pages/user/RoomDetails.jsx';
 import Profile     from '../pages/user/Profile.jsx';
 import Favorites   from '../pages/user/Favorites.jsx';
+import MyRequests  from '../pages/user/MyRequests.jsx';
 import MyChats     from '../pages/user/MyChats.jsx';
 
 import LandlordDashboard from '../pages/landlord/Dashboard.jsx';
 import AddRoom           from '../pages/landlord/AddRoom.jsx';
 import EditRoom          from '../pages/landlord/EditRoom.jsx';
 import MyRooms           from '../pages/landlord/MyRooms.jsx';
+import LandlordRequests  from '../pages/landlord/Requests.jsx';
 
 import AdminDashboard from '../pages/admin/Dashboard.jsx';
 import AdminUsers     from '../pages/admin/Users.jsx';
@@ -41,7 +43,7 @@ const AppRoutes = () => (
     <Route path="/verify-email"        element={<VerifyEmail />} />
     <Route path="/resend-verification" element={<ResendVerification />} />
 
-    {/* Shared chats */}
+    {/* Shared chats — only reachable via the navbar link now, no sidebar entry */}
     <Route path="/chats" element={
       <ProtectedRoute roles={['user', 'landlord']}><MyChats /></ProtectedRoute>
     } />
@@ -51,10 +53,11 @@ const AppRoutes = () => (
       <ProtectedRoute roles={['user', 'landlord']}><UserLayout /></ProtectedRoute>
     }>
       <Route path="profile"   element={<Profile />} />
-      {/* Favorites is a 'user'-only feature on the backend (requireRole('user'))
-          — gate it separately so landlords can't land on a page that will 403 */}
       <Route path="favorites" element={
         <ProtectedRoute roles={['user']}><Favorites /></ProtectedRoute>
+      } />
+      <Route path="requests" element={
+        <ProtectedRoute roles={['user']}><MyRequests /></ProtectedRoute>
       } />
       <Route index element={<Navigate to="profile" replace />} />
     </Route>
@@ -67,6 +70,7 @@ const AppRoutes = () => (
       <Route path="my-rooms"     element={<MyRooms />} />
       <Route path="add-room"     element={<AddRoom />} />
       <Route path="edit-room/:id" element={<EditRoom />} />
+      <Route path="requests"     element={<LandlordRequests />} />
       <Route index element={<Navigate to="dashboard" replace />} />
     </Route>
 
